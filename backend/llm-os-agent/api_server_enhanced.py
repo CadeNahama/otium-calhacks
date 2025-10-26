@@ -1145,6 +1145,106 @@ async def disconnect_ssh(request: Request, user_id: str = Depends(require_auth))
         print(f"Disconnect error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/commands/{command_id}/chat")
+async def send_chat_message(
+    command_id: str,
+    request: Request,
+    chat_request: dict,
+    user_id: str = Depends(require_auth)
+):
+    """Send a chat message about a command"""
+    try:
+        db = next(get_db())
+        db_service = DatabaseService(db)
+        
+        # Get command
+        command = db_service.get_command(command_id, user_id)
+        if not command:
+            raise HTTPException(status_code=404, detail="Command not found")
+        
+        # Extract message from request
+        message = chat_request.get('message', '')
+        if not message:
+            raise HTTPException(status_code=400, detail="Message is required")
+        
+        # Save user message
+        user_msg = db_service.create_chat_message(
+            command_id=command_id,
+            sender='user',
+            message=message
+        )
+        
+        # TODO: Generate AI response using OpenAI
+        # For now, just return a simple acknowledgment
+        ai_response = f"I understand you're asking about: {message}. This is the chat feature - AI responses coming soon!"
+        
+        # Save AI response
+        ai_msg = db_service.create_chat_message(
+            command_id=command_id,
+            sender='ai',
+            message=ai_response
+        )
+        
+        db.close()
+        
+        return {
+            "user_message": {
+                "id": user_msg.id,
+                "message": user_msg.message,
+                "created_at": user_msg.created_at.isoformat()
+            },
+            "ai_message": {
+                "id": ai_msg.id,
+                "message": ai_msg.message,
+                "created_at": ai_msg.created_at.isoformat()
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chat message failed: {str(e)}")
+
+@app.get("/api/commands/{command_id}/chat")
+async def get_chat_messages(
+    command_id: str,
+    request: Request,
+    user_id: str = Depends(require_auth)
+):
+    """Get chat messages for a command"""
+    try:
+        db = next(get_db())
+        db_service = DatabaseService(db)
+        
+        # Get command
+        command = db_service.get_command(command_id, user_id)
+        if not command:
+            raise HTTPException(status_code=404, detail="Command not found")
+        
+        # Get chat messages
+        messages = db_service.get_chat_messages(command_id)
+        
+        db.close()
+        
+        return {
+            "messages": [
+                {
+                    "id": msg.id,
+                    "sender": msg.sender,
+                    "message": msg.message,
+                    "message_type": msg.message_type,
+                    "created_at": msg.created_at.isoformat(),
+                    "metadata": msg.message_metadata or {}
+                }
+                for msg in messages
+            ]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get chat messages: {str(e)}")
+
 @app.get("/api/commands")
 async def list_commands(
     request: Request,
