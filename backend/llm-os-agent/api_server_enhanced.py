@@ -36,7 +36,7 @@ from command_executor import CommandExecutor
 
 # Import new database modules  
 from database import get_db, init_database, Command
-from database_service import DatabaseService
+from database_service import DatabaseService, _execution_results_lock
 from secrets_manager import SecretsManager
 
 # Configuration constants
@@ -675,56 +675,58 @@ async def approve_command_step(
                 print(f"[DEBUG] Step execution result: {result}")
                 
                 # Save execution result to database
-                # CRITICAL: Re-query command with lock to get latest execution_results
-                # (another step might have saved results while we were executing)
-                command = db_service.db.query(Command).filter(Command.id == command_id).with_for_update().first()
-                
-                # Get existing execution_results or create new structure
-                existing_results = command.execution_results or {
-                    "success": None,
-                    "total_steps": len(command.generated_commands) if command.generated_commands else 0,
-                    "successful_steps": 0,
-                    "failed_steps": 0,
-                    "skipped_steps": 0,
-                    "total_execution_time": 0,
-                    "step_results": []
-                }
-                
-                # Initialize step_results if it doesn't exist
-                if "step_results" not in existing_results:
-                    existing_results["step_results"] = []
-                
-                # Add this step's result
-                step_result = {
-                    "step_index": approval_request.step_index,
-                    "command": step_command.get('command', ''),
-                    "success": result.get('success', False),
-                    "status": result.get('status', 'unknown'),
-                    "output": result.get('output', ''),
-                    "stderr": result.get('stderr', ''),
-                    "error": result.get('error', ''),
-                    "exit_code": result.get('exit_code', -1),
-                    "execution_time": result.get('execution_time', 0)
-                }
-                existing_results["step_results"].append(step_result)
-                
-                # Update counters
-                if result.get('success', False):
-                    existing_results["successful_steps"] = existing_results.get("successful_steps", 0) + 1
-                else:
-                    existing_results["failed_steps"] = existing_results.get("failed_steps", 0) + 1
-                
-                existing_results["total_execution_time"] = existing_results.get("total_execution_time", 0) + result.get('execution_time', 0)
-                
-                # Update overall success status
-                total_executed = existing_results.get("successful_steps", 0) + existing_results.get("failed_steps", 0)
-                if total_executed == existing_results.get("total_steps", 0):
-                    # All steps executed - determine overall success
-                    existing_results["success"] = existing_results.get("failed_steps", 0) == 0
-                
-                # Save to database
-                db_service.update_command_execution_results(command_id, existing_results)
-                print(f"[DEBUG] Saved execution result to database for step {approval_request.step_index}")
+                # CRITICAL: Use threading lock to prevent race conditions
+                with _execution_results_lock:
+                    # Re-query command to get latest execution_results
+                    # (another step might have saved results while we were executing)
+                    command = db_service.db.query(Command).filter(Command.id == command_id).first()
+                    
+                    # Get existing execution_results or create new structure
+                    existing_results = command.execution_results or {
+                        "success": None,
+                        "total_steps": len(command.generated_commands) if command.generated_commands else 0,
+                        "successful_steps": 0,
+                        "failed_steps": 0,
+                        "skipped_steps": 0,
+                        "total_execution_time": 0,
+                        "step_results": []
+                    }
+                    
+                    # Initialize step_results if it doesn't exist
+                    if "step_results" not in existing_results:
+                        existing_results["step_results"] = []
+                    
+                    # Add this step's result
+                    step_result = {
+                        "step_index": approval_request.step_index,
+                        "command": step_command.get('command', ''),
+                        "success": result.get('success', False),
+                        "status": result.get('status', 'unknown'),
+                        "output": result.get('output', ''),
+                        "stderr": result.get('stderr', ''),
+                        "error": result.get('error', ''),
+                        "exit_code": result.get('exit_code', -1),
+                        "execution_time": result.get('execution_time', 0)
+                    }
+                    existing_results["step_results"].append(step_result)
+                    
+                    # Update counters
+                    if result.get('success', False):
+                        existing_results["successful_steps"] = existing_results.get("successful_steps", 0) + 1
+                    else:
+                        existing_results["failed_steps"] = existing_results.get("failed_steps", 0) + 1
+                    
+                    existing_results["total_execution_time"] = existing_results.get("total_execution_time", 0) + result.get('execution_time', 0)
+                    
+                    # Update overall success status
+                    total_executed = existing_results.get("successful_steps", 0) + existing_results.get("failed_steps", 0)
+                    if total_executed == existing_results.get("total_steps", 0):
+                        # All steps executed - determine overall success
+                        existing_results["success"] = existing_results.get("failed_steps", 0) == 0
+                    
+                    # Save to database (this will acquire the lock again, but that's ok - same thread)
+                    db_service.update_command_execution_results(command_id, existing_results)
+                    print(f"[DEBUG] Saved execution result to database for step {approval_request.step_index}")
                 
                 # Log the execution
                 db_service.log_action(

@@ -8,7 +8,11 @@ from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 import uuid
+import threading
 from database import User, Connection, Command, CommandApproval, AuditLog, SystemCheckpoint
+
+# Global lock for execution results updates to prevent race conditions
+_execution_results_lock = threading.Lock()
 
 class DatabaseService:
     def __init__(self, db: Session):
@@ -197,17 +201,18 @@ class DatabaseService:
     
     def update_command_execution_results(self, command_id: str, execution_results: dict):
         """Update command execution results - the API already aggregates results, just save them"""
-        # Use row-level locking to prevent race conditions
-        command = self.db.query(Command).filter(Command.id == command_id).with_for_update().first()
-        if command:
-            # The API already built the complete aggregated results, just save them
-            command.execution_results = execution_results
-            
-            # Mark as executed if not already
-            if not command.executed_at:
-                command.executed_at = datetime.utcnow()
-            self.db.commit()
-            self.db.refresh(command)
+        # Use threading lock to prevent race conditions when multiple steps execute concurrently
+        with _execution_results_lock:
+            command = self.db.query(Command).filter(Command.id == command_id).first()
+            if command:
+                # The API already built the complete aggregated results, just save them
+                command.execution_results = execution_results
+                
+                # Mark as executed if not already
+                if not command.executed_at:
+                    command.executed_at = datetime.utcnow()
+                self.db.commit()
+                self.db.refresh(command)
     
     # Command approval management (step-by-step like Cursor)
     def create_step_approval(self, command_id: str, user_id: str, step_index: int, 
