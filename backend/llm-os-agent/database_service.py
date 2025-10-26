@@ -197,7 +197,8 @@ class DatabaseService:
     
     def update_command_execution_results(self, command_id: str, execution_results: dict):
         """Update command execution results - the API already aggregates results, just save them"""
-        command = self.db.query(Command).filter(Command.id == command_id).first()
+        # Use row-level locking to prevent race conditions
+        command = self.db.query(Command).filter(Command.id == command_id).with_for_update().first()
         if command:
             # The API already built the complete aggregated results, just save them
             command.execution_results = execution_results

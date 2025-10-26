@@ -35,7 +35,7 @@ from ssh_manager import SSHManager
 from command_executor import CommandExecutor
 
 # Import new database modules  
-from database import get_db, init_database
+from database import get_db, init_database, Command
 from database_service import DatabaseService
 from secrets_manager import SecretsManager
 
@@ -675,9 +675,9 @@ async def approve_command_step(
                 print(f"[DEBUG] Step execution result: {result}")
                 
                 # Save execution result to database
-                # CRITICAL: Refresh command from database to get latest execution_results
+                # CRITICAL: Re-query command with lock to get latest execution_results
                 # (another step might have saved results while we were executing)
-                db_service.db.refresh(command)
+                command = db_service.db.query(Command).filter(Command.id == command_id).with_for_update().first()
                 
                 # Get existing execution_results or create new structure
                 existing_results = command.execution_results or {
