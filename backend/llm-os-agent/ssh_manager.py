@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Minimal SSH Manager for Otium AI Agent
+Minimal SSH Manager for Ping AI Agent
 Stores SSH connections for the agent to use
 """
 

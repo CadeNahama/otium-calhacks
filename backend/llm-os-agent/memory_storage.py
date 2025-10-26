@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-In-Memory Storage Service for Otium AI Agent
+In-Memory Storage Service for Ping AI Agent
 Session-based storage that persists only while backend is running
 """
 

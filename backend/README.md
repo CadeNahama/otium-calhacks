@@ -1,4 +1,4 @@
-# Otium AI Agent Backend
+# Ping AI Agent Backend
 
 AI-powered Linux system administration backend with SSH support.
 

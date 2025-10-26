@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up Otium Frontend for Local Development"
+echo "🚀 Setting up Ping Frontend for Local Development"
 echo "=================================================="
 
 # Check if Node.js is installed

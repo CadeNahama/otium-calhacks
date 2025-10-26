@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up Otium Backend for Local Development (In-Memory)"
+echo "🚀 Setting up Ping Backend for Local Development (In-Memory)"
 echo "=============================================================="
 
 # Check if Python 3 is installed
@@ -37,7 +37,7 @@ if [ ! -f ".env" ]; then
 OPENAI_API_KEY=your_openai_api_key_here
 
 # Encryption Key
-OTIUM_ENCRYPTION_KEY=$ENCRYPTION_KEY
+PING_ENCRYPTION_KEY=$ENCRYPTION_KEY
 
 # Server Configuration
 PORT=8000

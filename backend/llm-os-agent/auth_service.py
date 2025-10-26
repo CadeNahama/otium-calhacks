@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Authentication and authorization service for Otium AI Agent
+Authentication and authorization service for Ping AI Agent
 Handles user roles, permissions, and access control
 """
 

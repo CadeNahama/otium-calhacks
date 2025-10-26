@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Secrets management for Otium AI Agent
+Secrets management for Ping AI Agent
 Handles encryption/decryption of sensitive data like SSH credentials
 """
 
@@ -13,11 +13,11 @@ from typing import Dict, Any, Optional
 class SecretsManager:
     def __init__(self):
         # Get encryption key from environment
-        encryption_key = os.getenv("OTIUM_ENCRYPTION_KEY")
+        encryption_key = os.getenv("PING_ENCRYPTION_KEY")
         if not encryption_key:
             # Generate new key if not exists (for development)
             encryption_key = Fernet.generate_key().decode()
-            print(f"⚠️  Generated new encryption key. Set OTIUM_ENCRYPTION_KEY={encryption_key} in production")
+            print(f"⚠️  Generated new encryption key. Set PING_ENCRYPTION_KEY={encryption_key} in production")
         
         self.cipher = Fernet(encryption_key.encode())
     

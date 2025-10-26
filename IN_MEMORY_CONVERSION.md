@@ -1,7 +1,7 @@
 # In-Memory Conversion Summary
 
 ## Overview
-Successfully converted Otium from database-backed storage to **session-based in-memory storage**. All data now persists only while the backend is running and resets on restart.
+Successfully converted Ping from database-backed storage to **session-based in-memory storage**. All data now persists only while the backend is running and resets on restart.
 
 ## What Changed
 
@@ -255,7 +255,7 @@ curl http://localhost:8000/api/health
 
 ## Conclusion
 
-The in-memory conversion makes Otium **perfect for hackathons** by:
+The in-memory conversion makes Ping **perfect for hackathons** by:
 1. Eliminating Docker dependency
 2. Removing database complexity
 3. Enabling instant setup

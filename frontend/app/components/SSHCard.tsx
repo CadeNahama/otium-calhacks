@@ -336,7 +336,7 @@ export function SSHCard({ userId }: SSHCardProps) {
                       <DrawerHeader>
                         <DrawerTitle>Test Server Credentials</DrawerTitle>
                         <DrawerDescription>
-                          Use these credentials to test Otium.
+                          Use these credentials to test Ping.
                         </DrawerDescription>
                       </DrawerHeader>
                       <div className="p-4 space-y-4">

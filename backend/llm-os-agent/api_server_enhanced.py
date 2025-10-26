@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced FastAPI Server for Otium AI Agent - Version 2
+Enhanced FastAPI Server for Ping AI Agent - Version 2
 Integrates database persistence, step-by-step approval, audit logging, and security controls
 """
 
@@ -95,7 +95,7 @@ init_database()
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Otium AI Agent API - Enhanced Version",
+    title="Ping AI Agent API - Enhanced Version",
     description="AI-powered system administration with enterprise security and step-by-step approval",
     version="2.0.0"
 )
@@ -1360,7 +1360,7 @@ async def generate_command_plan(user_id: str, connection_id: str, request: str):
 async def root():
     """Root endpoint"""
     return {
-        "message": "Otium AI Agent API - Enhanced Version",
+        "message": "Ping AI Agent API - Enhanced Version",
         "version": "2.0.0",
         "features": [
             "Database Persistence",

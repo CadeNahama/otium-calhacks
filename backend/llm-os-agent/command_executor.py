@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Command Executor for Otium AI Agent - Phase 1 Simplified
+Command Executor for Ping AI Agent - Phase 1 Simplified
 Handles command execution and basic safety checks via SSH
 """
 

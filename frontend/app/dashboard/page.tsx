@@ -37,7 +37,7 @@ export default function Dashboard() {
             <div className="max-w-4xl mx-auto">
               <div className="text-center py-24">
                 <h1 className="mb-8 leading-tight">
-                  Welcome to Otium
+                  Welcome to Ping
                 </h1>
                 <p className="text-body-large text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
                   Review, approve, and execute AI-generated commands securely.
@@ -78,7 +78,7 @@ export default function Dashboard() {
           <div className="max-w-7xl mx-auto">
             <div className="mb-16 text-center">
               <h1 className="text-4xl font-bold text-foreground leading-tight">
-                Welcome to Otium.
+                Welcome to Ping.
               </h1>
             </div>
 

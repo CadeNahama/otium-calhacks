@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Database Viewer for Otium AI Agent
+Database Viewer for Ping AI Agent
 Interactive tool to view and manage your database
 """
 
@@ -225,7 +225,7 @@ def interactive_menu():
     """Interactive menu for database viewing"""
     while True:
         print(f"\n{'='*60}")
-        print("🗄️  OTIUM AI AGENT DATABASE VIEWER")
+        print("🗄️  PING AI AGENT DATABASE VIEWER")
         print(f"{'='*60}")
         print("1. 📊 Database Statistics")
         print("2. 👥 View Users")
@@ -268,7 +268,7 @@ def interactive_menu():
 
 def main():
     """Main function"""
-    print("🗄️  Otium AI Agent Database Viewer")
+    print("🗄️  Ping AI Agent Database Viewer")
     print("=" * 50)
     
     # Check if DATABASE_URL is set

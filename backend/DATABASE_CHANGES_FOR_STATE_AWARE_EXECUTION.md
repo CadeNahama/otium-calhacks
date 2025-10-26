@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the database schema changes required to implement **Cursor-like state-aware step execution** in the Otium AI Agent. The current system generates all command steps upfront and executes them statically. The new system will generate steps dynamically based on real-time system state evaluation.
+This document outlines the database schema changes required to implement **Cursor-like state-aware step execution** in the Ping AI Agent. The current system generates all command steps upfront and executes them statically. The new system will generate steps dynamically based on real-time system state evaluation.
 
 ## Current Architecture Issues
 
@@ -271,4 +271,4 @@ CREATE INDEX idx_commands_state_evaluation ON commands(last_state_evaluation);
 
 ---
 
-*This document serves as the foundation for implementing state-aware step execution in the Otium AI Agent, bringing it closer to the intelligent, adaptive behavior of Cursor's step-by-step execution system.*
+*This document serves as the foundation for implementing state-aware step execution in the Ping AI Agent, bringing it closer to the intelligent, adaptive behavior of Cursor's step-by-step execution system.*

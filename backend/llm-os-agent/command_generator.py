@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Command Generator for Otium AI Agent - Phase 1 Simplified (OpenAI Only)
+Command Generator for Ping AI Agent - Phase 1 Simplified (OpenAI Only)
 Generates appropriate commands based on system context and user requests
 """
 

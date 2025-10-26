@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Step-by-step command approval service for Otium AI Agent
+Step-by-step command approval service for Ping AI Agent
 Implements Cursor-style approval workflow where each command step must be individually approved
 """
 

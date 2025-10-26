@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SSH System Detector for Otium AI Agent - Phase 1 Simplified
+SSH System Detector for Ping AI Agent - Phase 1 Simplified
 Detects basic system information on remote servers via SSH
 """
 

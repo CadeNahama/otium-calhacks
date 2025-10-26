@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Otium AI Agent - Simplified Phase 1
+Ping AI Agent - Simplified Phase 1
 SSH-based Linux system administration AI agent with core functionality only
 """
 
@@ -38,7 +38,7 @@ class Agent:
     
     def start(self) -> bool:
         """Start the agent and initialize environment"""
-        print("🚀 Starting Otium AI Agent...")
+        print("🚀 Starting Ping AI Agent...")
         print("🔌 Starting in SSH mode...")
         
         try:
@@ -73,7 +73,7 @@ class Agent:
             )
             print("✅ Command generator initialized")
             
-            print("✅ Otium Agent initialized successfully!")
+            print("✅ Ping Agent initialized successfully!")
             return True
             
         except Exception as e:
@@ -220,7 +220,7 @@ def main():
     print(f"✅ OpenAI API key found: {api_key[:20]}...")
     
     # Note: Agent is now API-only, no interactive mode needed
-    print("🤖 Otium Agent designed for API use only")
+    print("🤖 Ping Agent designed for API use only")
     print("💡 Use the API endpoints to interact with the agent")
     
     return 0

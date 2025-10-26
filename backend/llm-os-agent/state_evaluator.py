@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-State Evaluation Service for Otium AI Agent
+State Evaluation Service for Ping AI Agent
 Captures, compares, and evaluates system state changes for adaptive step execution
 """
 

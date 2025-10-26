@@ -1,7 +1,7 @@
 // API Configuration
 export const API_CONFIG = {
-  // Otium Backend URL - Local development
-  OTIUM_BACKEND_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  // Ping Backend URL - Local development
+  PING_BACKEND_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   
   // API endpoints - pointing to local backend
   ENDPOINTS: {
@@ -36,7 +36,7 @@ export const apiCall = async <T = unknown>(
   userId: string
 ): Promise<T> => {
   // Construct full URL by combining backend URL with endpoint
-  const fullUrl = `${API_CONFIG.OTIUM_BACKEND_URL}${endpoint}`;
+  const fullUrl = `${API_CONFIG.PING_BACKEND_URL}${endpoint}`;
   
   const response = await fetch(fullUrl, {
     ...options,

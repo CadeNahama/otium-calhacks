@@ -1,4 +1,4 @@
-# 🏗️ Otium AI Agent - Project Structure
+# 🏗️ Ping AI Agent - Project Structure
 
 ## 📁 **Core API Files**
 
@@ -66,7 +66,7 @@
 
 ```bash
 DATABASE_URL=postgresql://...           # PostgreSQL connection
-OTIUM_ENCRYPTION_KEY=...               # Fernet encryption key
+PING_ENCRYPTION_KEY=...               # Fernet encryption key
 OPENAI_API_KEY=...                     # OpenAI API access
 SSH_PRIVATE_KEY=...                    # SSH key for connections
 ```

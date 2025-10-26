@@ -114,7 +114,7 @@ export function ConnectionProvider({ children }: ConnectionProviderProps) {
         const handleBeforeUnload = () => {
       // Use sendBeacon for reliable disconnect on page unload
       if (activeConnection) {
-        const url = `${API_CONFIG.OTIUM_BACKEND_URL}${API_CONFIG.ENDPOINTS.SSH.DISCONNECT}`;
+        const url = `${API_CONFIG.PING_BACKEND_URL}${API_CONFIG.ENDPOINTS.SSH.DISCONNECT}`;
         const data = JSON.stringify({});
         
         // Use sendBeacon for better reliability on page unload

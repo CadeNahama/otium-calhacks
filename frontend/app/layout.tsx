@@ -4,8 +4,8 @@ import { UserProvider } from "./contexts/UserContext";
 import { ConnectionProvider } from "./contexts/ConnectionContext";
 
 export const metadata: Metadata = {
-  title: "Otium - Review, approve, and execute",
-  description: "Review, approve, and execute AI-generated commands securely with Otium's AI-powered server management platform.",
+  title: "Ping - Review, approve, and execute",
+  description: "Review, approve, and execute AI-generated commands securely with Ping's AI-powered server management platform.",
 };
 
 export default function RootLayout({

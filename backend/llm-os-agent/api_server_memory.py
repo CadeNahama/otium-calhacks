@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-In-Memory FastAPI Server for Otium AI Agent
+In-Memory FastAPI Server for Ping AI Agent
 Session-based storage - all data persists only while backend is running
 """
 
@@ -38,7 +38,7 @@ STATUS_COMPLETED = "completed"
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Otium AI Agent API - In-Memory Version",
+    title="Ping AI Agent API - In-Memory Version",
     description="AI-powered system administration with session-based in-memory storage",
     version="3.0.0"
 )
@@ -774,7 +774,7 @@ async def generate_command_plan(user_id: str, connection_id: str, request: str):
 async def root():
     """Root endpoint"""
     return {
-        "message": "Otium AI Agent API - In-Memory Version",
+        "message": "Ping AI Agent API - In-Memory Version",
         "version": "3.0.0",
         "storage": "session-based (in-memory)",
         "features": [

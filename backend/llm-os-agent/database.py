@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Database models and configuration for Otium AI Agent
+Database models and configuration for Ping AI Agent
 Uses SQLAlchemy with PostgreSQL for enterprise-grade persistence
 """
 

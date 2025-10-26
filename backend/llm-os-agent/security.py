@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Security validation and sanitization for Otium AI Agent
+Security validation and sanitization for Ping AI Agent
 Provides input validation, sanitization, and security checks
 """
 

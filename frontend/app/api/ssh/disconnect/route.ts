@@ -23,12 +23,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Call Otium backend with user ID header
-    const response = await fetch(`${API_CONFIG.OTIUM_BACKEND_URL}/api/disconnect`, {
+    // Call Ping backend with user ID header
+    const response = await fetch(`${API_CONFIG.PING_BACKEND_URL}/api/disconnect`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'user-id': userId, // Forward user ID to Otium backend using correct header name
+        'user-id': userId, // Forward user ID to Ping backend using correct header name
       },
       body: JSON.stringify({ command_id: connection_id }),
     });

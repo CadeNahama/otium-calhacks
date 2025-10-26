@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Database service layer for Otium AI Agent
+Database service layer for Ping AI Agent
 Provides high-level database operations with business logic
 """
 

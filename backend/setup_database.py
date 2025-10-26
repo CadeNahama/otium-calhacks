@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Database setup script for Otium AI Agent
+Database setup script for Ping AI Agent
 This script helps you set up and manage the PostgreSQL database
 """
 
@@ -14,7 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'llm-os-agent'))
 
 def setup_database():
     """Set up the database and create tables"""
-    print("🗄️  Setting up Otium AI Agent Database...")
+    print("🗄️  Setting up Ping AI Agent Database...")
     
     # Get database URL from environment
     database_url = os.getenv("DATABASE_URL")

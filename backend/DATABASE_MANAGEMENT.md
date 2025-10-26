@@ -1,4 +1,4 @@
-# 🗄️ Database Management Guide for Otium AI Agent
+# 🗄️ Database Management Guide for Ping AI Agent
 
 This guide shows you how to set up, manage, and view all the databases and features I just built.
 
@@ -7,7 +7,7 @@ This guide shows you how to set up, manage, and view all the databases and featu
 ### 1. **Add PostgreSQL to Railway**
 ```bash
 # Navigate to your backend directory
-cd /Users/cadenahama/Published-Otium-Backend/otium-backend
+cd /Users/cadenahama/CALHACKS-OTIUM/backend
 
 # Add PostgreSQL database
 railway add --database postgres
@@ -184,7 +184,7 @@ python setup_database.py railway
 
 ### **Encrypted Credentials**
 - All SSH passwords are encrypted using Fernet encryption
-- Encryption key stored in `OTIUM_ENCRYPTION_KEY` environment variable
+- Encryption key stored in `PING_ENCRYPTION_KEY` environment variable
 - Credentials are never stored in plain text
 
 ### **Audit Trail**
@@ -252,7 +252,7 @@ chmod +x deploy_phase1.sh
 railway add --database postgres
 
 # 2. Set encryption key
-railway variables set OTIUM_ENCRYPTION_KEY=$(python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+railway variables set PING_ENCRYPTION_KEY=$(python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
 
 # 3. Initialize database
 python setup_database.py

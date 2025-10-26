@@ -1,4 +1,4 @@
-# Otium - AI-Powered System Administration
+# Ping - AI-Powered System Administration
 
 Full-stack application for AI-powered Linux system administration with SSH support. Built for hackathons with **session-based in-memory storage** - no database required!
 
@@ -94,7 +94,7 @@ Frontend runs on: `http://localhost:3000`
 ### Backend (`backend/.env`)
 ```bash
 OPENAI_API_KEY=your_openai_api_key_here
-OTIUM_ENCRYPTION_KEY=your_generated_encryption_key
+PING_ENCRYPTION_KEY=your_generated_encryption_key
 PORT=8000
 HOST=0.0.0.0
 ```

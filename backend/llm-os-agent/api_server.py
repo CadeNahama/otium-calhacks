@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-FastAPI Server for Otium AI Agent
+FastAPI Server for Ping AI Agent
 Integrates SSH manager, command executor, and agent for remote server management
 """
 
@@ -67,7 +67,7 @@ except Exception as e:
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Otium AI Agent API",
+    title="Ping AI Agent API",
     description="AI-powered Linux system administration backend with SSH support",
     version="1.0.0"
 )
@@ -862,7 +862,7 @@ async def list_commands(
 async def root():
     """Root endpoint with API information"""
     return {
-        "message": "Otium AI Agent API",
+        "message": "Ping AI Agent API",
         "version": "1.0.0",
         "description": "AI-powered Linux system administration backend with SSH support",
         "endpoints": {
@@ -888,7 +888,7 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     
-    print("🚀 Starting Otium AI Agent API Server...")
+    print("🚀 Starting Ping AI Agent API Server...")
     print("📡 API endpoints available at http://localhost:8000")
     print("🔗 Health check: GET /api/health")
     print("🔌 Connect to server: POST /api/connect")

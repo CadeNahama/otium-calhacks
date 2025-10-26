@@ -1,1 +1,1 @@
-# Tests package for Otium AI Agent
+# Tests package for Ping AI Agent

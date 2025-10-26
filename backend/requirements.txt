@@ -1,4 +1,4 @@
-# Otium AI Agent - In-Memory Version
+# Ping AI Agent - In-Memory Version
 # Session-based storage - no database required
 
 # Core AI and OpenAI Integration

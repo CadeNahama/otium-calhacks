@@ -32,12 +32,12 @@ export async function GET(request: NextRequest) {
     if (connectionId) queryParams.append('connection_id', connectionId);
     queryParams.append('limit', limit);
 
-    // Call Otium backend with user ID header
-    const response = await fetch(`${API_CONFIG.OTIUM_BACKEND_URL}/api/commands?${queryParams}`, {
+    // Call Ping backend with user ID header
+    const response = await fetch(`${API_CONFIG.PING_BACKEND_URL}/api/commands?${queryParams}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'user-id': userId, // Forward user ID to Otium backend using correct header name
+        'user-id': userId, // Forward user ID to Ping backend using correct header name
       },
     });
 

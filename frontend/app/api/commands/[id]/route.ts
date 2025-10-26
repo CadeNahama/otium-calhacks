@@ -25,12 +25,12 @@ export async function GET(
       );
     }
 
-    // Call Otium backend with user ID header
-    const response = await fetch(`${API_CONFIG.OTIUM_BACKEND_URL}/api/commands/${id}`, {
+    // Call Ping backend with user ID header
+    const response = await fetch(`${API_CONFIG.PING_BACKEND_URL}/api/commands/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'user-id': userId, // Forward user ID to Otium backend using correct header name
+        'user-id': userId, // Forward user ID to Ping backend using correct header name
       },
     });
 
