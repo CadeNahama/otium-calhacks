@@ -4,6 +4,16 @@ Enhanced FastAPI Server for Ping AI Agent - Version 2
 Integrates database persistence, step-by-step approval, audit logging, and security controls
 """
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("✅ Loaded environment variables from .env file")
+except ImportError:
+    print("⚠️  python-dotenv not installed, using system environment variables")
+except Exception as e:
+    print(f"⚠️  Error loading .env file: {e}")
+
 from fastapi import FastAPI, HTTPException, Header, Request, Response, Depends
 from fastapi.encoders import jsonable_encoder
 from starlette.middleware.cors import CORSMiddleware
