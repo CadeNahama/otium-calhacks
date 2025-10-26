@@ -24,7 +24,7 @@ class Config:
             "ai": {
                 "provider": "anthropic",
                 "anthropic": {
-                    "model": "claude-3-5-sonnet-20241022",
+                    "model": "claude-sonnet-4-5-20250929",
                     "api_key": "",
                     "temperature": 0.1,
                     "max_tokens": 1000

@@ -12,7 +12,7 @@ from anthropic import Anthropic
 
 # Configuration constants
 DEFAULT_TIMEOUT = 5
-DEFAULT_CLAUDE_MODEL = "claude-3-5-sonnet-20241022"
+DEFAULT_CLAUDE_MODEL = "claude-sonnet-4-5-20250929"  # Claude Sonnet 4.5 - Latest and most capable
 DEFAULT_CLAUDE_MAX_TOKENS = 1000
 DEFAULT_CLAUDE_TEMPERATURE = 0.1
 
