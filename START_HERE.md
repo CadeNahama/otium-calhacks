@@ -57,11 +57,11 @@ echo "ANTHROPIC_API_KEY=sk-ant-api03-your-key-here" >> backend/.env
 
 **Your `.env` should look like:**
 ```bash
-# Anthropic Claude API Configuration
-ANTHROPIC_API_KEY=sk-ant-api03-IeM54B0vQ5CkahsvSMvukqAO...
+# Anthropic Claude API Configuration (REQUIRED)
+ANTHROPIC_API_KEY=sk-ant-api03-your-actual-key-here
 
 # Optional: Auto-generated if not set
-PING_ENCRYPTION_KEY=2SWxBjiI2Ozw4q9MBy8n_u1jOLXN3s87z4UYwEcraGQ=
+PING_ENCRYPTION_KEY=auto-generated-on-first-run
 
 # Server Configuration
 PORT=8000
@@ -267,112 +267,6 @@ curl http://localhost:8000/api/health
 ✅ Try: Running commands as root user
 ✅ Check: SSH key permissions (chmod 600 ~/.ssh/id_rsa)
 ```
-
----
-
-## 🎓 Understanding Ping's Architecture
-
-### **How It Works**
-
-1. **User Input** (Natural Language)
-   ```
-   "Set up a LEMP stack"
-   ```
-
-2. **System Detection** (Via SSH)
-   - Detects OS: Ubuntu 22.04
-   - Checks RAM: 957MB available
-   - Finds tools: apt, systemctl, ufw, etc.
-   - Identifies architecture: x86_64
-
-3. **AI Analysis** (Claude Sonnet 4.5)
-   - Receives system context
-   - Analyzes user request
-   - Generates OS-specific commands
-   - Adds safety checks
-   - Calculates risk level
-
-4. **Command Presentation**
-   - Shows all commands to user
-   - Explains each step
-   - Displays expected outcomes
-   - Allows step-by-step approval
-
-5. **Execution** (Via SSH)
-   - Runs each approved command
-   - Streams real-time output
-   - Tracks success/failure
-   - Logs execution time
-
-6. **Verification**
-   - Validates installation
-   - Checks services running
-   - Tests configurations
-   - Reports final status
-
----
-
-## 📚 Key Concepts
-
-### **Context-Aware Commands**
-
-Ping generates different commands based on your system:
-
-| System | Package Manager | Service Manager | Command |
-|--------|----------------|-----------------|---------|
-| Ubuntu 22.04 | `apt` | `systemctl` | `apt install nginx` |
-| CentOS 8 | `dnf` | `systemctl` | `dnf install nginx` |
-| CentOS 7 | `yum` | `service` | `yum install nginx` |
-
-### **Risk Levels**
-
-| Risk | Description | Examples |
-|------|-------------|----------|
-| 🟢 **Low** | Read-only, non-destructive | `ps aux`, `df -h`, `cat /etc/os-release` |
-| 🟡 **Medium** | Installs software, modifies config | `apt install nginx`, edit config files |
-| 🔴 **High** | Destructive, irreversible | `rm -rf`, database drops, user deletion |
-
-### **Idempotent Operations**
-
-Ping generates commands that are safe to run multiple times:
-- Installing already-installed packages: Skips or updates
-- Creating existing directories: Checks first with `mkdir -p`
-- Starting running services: Uses `systemctl restart` instead of `start`
-
----
-
-## 🔐 Security Best Practices
-
-1. **Never run Ping as root** unless absolutely necessary
-2. **Review commands** before approving (especially high-risk)
-3. **Use SSH keys** instead of passwords when possible
-4. **Rotate credentials** regularly
-5. **Keep audit logs** for compliance
-6. **Test on dev servers** before production
-
----
-
-## 💡 Pro Tips
-
-1. **Be Specific**: "Install nginx 1.18" is better than "install nginx"
-2. **Mention OS**: "On Ubuntu 22.04, install..." (though Ping auto-detects)
-3. **Include Context**: "For a WordPress site with high traffic..."
-4. **Ask Questions**: "What's the difference between nginx and apache for my use case?"
-5. **Learn as You Go**: Ping shows best practices - study the generated commands!
-
----
-
-## 📊 Performance Tips
-
-### **For Faster Response Times**
-- Use specific requests ("Install nginx" vs "Setup web server")
-- Stay connected (SSH connection stays alive)
-- Run backend with more workers: `uvicorn app:app --workers 4`
-
-### **For Complex Tasks**
-- Break into smaller steps
-- Approve in batches
-- Monitor system resources during execution
 
 ---
 
