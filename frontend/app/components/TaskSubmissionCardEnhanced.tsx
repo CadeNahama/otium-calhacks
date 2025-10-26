@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Send, CheckCircle, XCircle, Clock, Zap, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { CodeBlock } from './CodeBlock';
+import { CommandChatPanel } from './CommandChatPanel';
 import { useToast } from '../hooks/useToast';
 
 interface GeneratedCommand {
@@ -670,6 +671,13 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
                 </p>
               </div>
             )}
+
+            {/* Chat Panel */}
+            <CommandChatPanel
+              commandId={generatedCommand.command_id}
+              userId={userId}
+              commands={generatedCommand.generated_commands}
+            />
 
             {/* Status Messages */}
             {generatedCommand.approval_required && (
