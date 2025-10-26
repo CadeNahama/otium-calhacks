@@ -679,6 +679,8 @@ async def approve_command_step(
                 with _execution_results_lock:
                     # Re-query command to get latest execution_results
                     # (another step might have saved results while we were executing)
+                    # IMPORTANT: Expire the session to force a fresh read from database
+                    db_service.db.expire_all()
                     command = db_service.db.query(Command).filter(Command.id == command_id).first()
                     
                     # Get existing execution_results or create new structure

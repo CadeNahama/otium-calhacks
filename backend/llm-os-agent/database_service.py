@@ -11,8 +11,9 @@ import uuid
 import threading
 from database import User, Connection, Command, CommandApproval, AuditLog, SystemCheckpoint
 
-# Global lock for execution results updates to prevent race conditions
-_execution_results_lock = threading.Lock()
+# Global REENTRANT lock for execution results updates to prevent race conditions
+# RLock allows the same thread to acquire the lock multiple times
+_execution_results_lock = threading.RLock()
 
 class DatabaseService:
     def __init__(self, db: Session):

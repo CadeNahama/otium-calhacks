@@ -168,6 +168,7 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
     }
 
     try {
+      console.log('[TaskSubmissionCard] Making API call to approve-step...');
       const response = await apiCall<{ 
         success: boolean; 
         message: string; 
@@ -191,7 +192,10 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
         userId
       );
 
+      console.log('[TaskSubmissionCard] API response received:', response);
+
       if (response.approval_status) {
+        console.log('[TaskSubmissionCard] Updating approval status:', response.approval_status);
         setApprovalStatus(response.approval_status);
       }
       
@@ -244,15 +248,21 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
         onCommandStatusChange?.();
       }
     } catch (error) {
+      console.error('[TaskSubmissionCard] Error in handleStepApproval:', error);
       showError(error instanceof Error ? error.message : `Failed to ${approved ? 'approve' : 'reject'} step`);
     }
   };
 
 
   const getStepStatus = (stepIndex: number) => {
-    if (!approvalStatus?.steps) return 'pending';
+    if (!approvalStatus?.steps) {
+      console.log(`[getStepStatus] No approval status, returning 'pending' for step ${stepIndex}`);
+      return 'pending';
+    }
     const step = approvalStatus.steps.find((s) => s.step_index === stepIndex);
-    return step?.status || 'pending';
+    const status = step?.status || 'pending';
+    console.log(`[getStepStatus] Step ${stepIndex} status:`, status, 'approvalStatus:', approvalStatus);
+    return status;
   };
 
   const getRiskLevelColor = (riskLevel: string) => {

@@ -33,24 +33,48 @@ export const API_CONFIG = {
 export const apiCall = async <T = unknown>(
   endpoint: string, 
   options: RequestInit = {}, 
-  userId: string
+  userId: string,
+  timeoutMs: number = 30000 // 30 second timeout
 ): Promise<T> => {
   // Construct full URL by combining backend URL with endpoint
   const fullUrl = `${API_CONFIG.PING_BACKEND_URL}${endpoint}`;
   
-  const response = await fetch(fullUrl, {
-    ...options,
-    headers: {
-      ...options.headers,
-      'user-id': userId, // Required for multi-user support
-      'Content-Type': 'application/json',
-    },
-  });
+  console.log(`[apiCall] Making request to: ${fullUrl}`);
   
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `API call failed: ${response.status}`);
+  // Create abort controller for timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  
+  try {
+    const response = await fetch(fullUrl, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'user-id': userId, // Required for multi-user support
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
+    
+    console.log(`[apiCall] Response status: ${response.status}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `API call failed: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log(`[apiCall] Response data:`, data);
+    return data;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error(`[apiCall] Request timeout after ${timeoutMs}ms`);
+      throw new Error(`Request timeout - no response from server after ${timeoutMs/1000}s`);
+    }
+    console.error(`[apiCall] Request failed:`, error);
+    throw error;
   }
-  
-  return response.json();
 };
