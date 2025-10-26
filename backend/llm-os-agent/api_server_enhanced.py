@@ -133,10 +133,7 @@ async def shutdown_event():
 # CORS Configuration - Local development only
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",        # Local development
-        "http://127.0.0.1:3000",        # Alternative localhost
-    ],
+    allow_origins=["*"],  # Allow all origins for local dev
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -145,7 +142,7 @@ app.add_middleware(
 )
 
 # Auth helper that skips OPTIONS requests (handled by CORS middleware)
-async def require_auth(request: Request, user_id: str = Header(None, alias="user-id")):
+async def require_auth(request: Request, user_id: Optional[str] = Header(None, alias="user-id")):
     # Skip auth for OPTIONS requests - let CORS middleware handle them
     if request.method == "OPTIONS":
         return "options_skip"  # Return dummy value for OPTIONS
