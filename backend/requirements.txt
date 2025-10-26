@@ -1,5 +1,4 @@
-# Ping AI Agent - In-Memory Version
-# Session-based storage - no database required
+# Ping AI Agent - Enhanced Version with Database Support
 
 # Core AI and Anthropic Claude Integration
 anthropic>=0.18.0
@@ -8,6 +7,10 @@ anthropic>=0.18.0
 fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 pydantic>=2.0.0
+
+# Database (for api_server_enhanced.py)
+sqlalchemy>=2.0.0
+alembic>=1.12.0
 
 # SSH and Remote Execution
 paramiko>=3.3.0
