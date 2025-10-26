@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuth } from "@workos-inc/authkit-nextjs/components";
 
 interface UserContextType {
   userId: string;
@@ -19,56 +18,39 @@ interface UserProviderProps {
 }
 
 export function UserProvider({ children }: UserProviderProps) {
-  const { user, loading: authLoading } = useAuth();
   const [userId, setUserId] = useState<string>('');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Update user context when WorkOS auth state changes
+  // Simple local auth - auto-login with demo user for hackathon
   useEffect(() => {
-
-    if (authLoading) {
-      setIsLoading(true);
-      return;
-    }
-
-    if (user) {
-      // Try to get user ID from various possible properties
-      let userIdentifier = '';
-      if (user.id) {
-        userIdentifier = user.id;
-      } else if (user.email) {
-        // Fallback to email if no ID
-        userIdentifier = user.email;
-      } else if (user.firstName && user.lastName) {
-        // Fallback to name combination
-        userIdentifier = `${user.firstName}_${user.lastName}`;
-      } else {
-        // Final fallback
-        userIdentifier = 'unknown_user';
-      }
-      
-      setUserId(userIdentifier);
+    // Check localStorage for existing user
+    const storedUserId = localStorage.getItem('otium_user_id');
+    
+    if (storedUserId) {
+      setUserId(storedUserId);
       setIsAuthenticated(true);
-      setIsLoading(false);
     } else {
-      // No authenticated user
-      setUserId('');
-      setIsAuthenticated(false);
-      setIsLoading(false);
+      // Auto-login with demo user for hackathon
+      const demoUserId = 'demo_user';
+      setUserId(demoUserId);
+      setIsAuthenticated(true);
+      localStorage.setItem('otium_user_id', demoUserId);
     }
-  }, [user, authLoading]);
+    
+      setIsLoading(false);
+  }, []);
 
   const login = (id: string) => {
-    // This function is kept for compatibility but WorkOS handles authentication
     setUserId(id);
     setIsAuthenticated(true);
+    localStorage.setItem('otium_user_id', id);
   };
 
   const logout = () => {
-    // This function is kept for compatibility but WorkOS handles sign out
     setUserId('');
     setIsAuthenticated(false);
+    localStorage.removeItem('otium_user_id');
   };
 
   const value: UserContextType = {

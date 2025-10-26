@@ -372,7 +372,11 @@ export function CommandPreviewCard({ userId, refreshTrigger }: CommandPreviewCar
                       <div className="text-center p-4 bg-muted/30 rounded-lg">
                         <div className="text-sm font-medium text-muted-foreground">Total Execution Time</div>
                         <div className="text-xl font-bold text-foreground">
-                          {selectedCommand.execution_results.total_execution_time.toFixed(4)}s
+                          {selectedCommand.execution_results.total_execution_time 
+                            ? selectedCommand.execution_results.total_execution_time.toFixed(4) 
+                            : selectedCommand.execution_results.step_results
+                              ?.reduce((sum, step) => sum + (step.execution_time || 0), 0)
+                              .toFixed(4) || '0.0000'}s
                         </div>
                       </div>
                     </div>
@@ -404,21 +408,48 @@ export function CommandPreviewCard({ userId, refreshTrigger }: CommandPreviewCar
                             </div>
                           )}
                           
-                          {step.stdout && (
-                            <div className="space-y-2">
-                              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Terminal Output:</div>
-                              <div className="p-3 bg-black/90 rounded text-sm font-mono text-green-100 whitespace-pre-wrap border border-border/20">
-                                {step.stdout}
-                              </div>
-                            </div>
-                          )}
-                          
-                          <div className="flex items-center justify-between text-sm text-muted-foreground">
-                            <span>Execution Time: {step.execution_time.toFixed(4)}s</span>
+                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                            <span>Execution Time: {step.execution_time?.toFixed(4) || '0.0000'}s</span>
                             {step.exit_code !== undefined && (
                               <span>Exit Code: {step.exit_code}</span>
                             )}
                           </div>
+
+                          {(step.output || step.stdout) && (
+                            <div className="mt-3 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-semibold text-gray-300">Execution Output</span>
+                                <div className="flex items-center gap-3 text-xs">
+                                  <span className={`font-medium ${
+                                    step.status === 'success' || step.success ? 'text-green-400' : 'text-red-400'
+                                  }`}>
+                                    {step.status === 'success' || step.success ? '✓ Success' : '✗ Failed'}
+                                  </span>
+                                  {step.exit_code !== undefined && (
+                                    <span className="text-gray-400">
+                                      Exit Code: {step.exit_code}
+                                    </span>
+                                  )}
+                                  {step.execution_time && (
+                                    <span className="text-gray-400">
+                                      {step.execution_time.toFixed(3)}s
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap overflow-x-auto max-h-64 overflow-y-auto">
+                                {step.output || step.stdout}
+                              </pre>
+                              {step.stderr && (
+                                <div className="mt-2">
+                                  <span className="text-xs font-semibold text-red-400">Error Output:</span>
+                                  <pre className="text-xs text-red-300 font-mono whitespace-pre-wrap overflow-x-auto mt-1">
+                                    {step.stderr}
+                                  </pre>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
