@@ -14,7 +14,7 @@ Ping is an **AI-powered DevOps automation platform** that bridges the gap betwee
 
 ### ✨ **The Problem We Solve**
 
-Traditional server management is:
+Traditional DevOps is Broken:
 - **Time-consuming**: Looking up commands, syntax, and flags
 - **Error-prone**: One typo can break production
 - **Knowledge-intensive**: Requires years of Linux/DevOps experience
@@ -37,25 +37,8 @@ Ping provides:
 - 180+ line system prompt with production-grade safety protocols
 - Context window of 200K tokens - understands your entire infrastructure
 
-### 2. **Real Intelligence, Not Template Matching**
-**Before (Old approach with templates):**
-```
-User: "Set up a LEMP stack"
-Old System: ❌ Installs only nginx (4 generic commands)
-```
 
-**After (Ping with Claude):**
-```
-User: "Set up a LEMP stack"
-Ping: ✅ Analyzes your Ubuntu 22.04 server with 957MB RAM
-      ✅ Installs nginx + MySQL + PHP-FPM (18 optimized commands)
-      ✅ Configures PHP-nginx integration
-      ✅ Sets up security (permissions, firewall rules)
-      ✅ Creates test files and verifies installation
-      ✅ Total execution: 64 seconds, 100% success rate
-```
-
-### 3. **Context-Aware Command Generation**
+### 2. **Context-Aware Command Generation**
 Ping knows:
 - **Your OS**: Ubuntu vs CentOS → `apt` vs `yum`
 - **Your Resources**: 957MB RAM → Optimizes MySQL config
@@ -201,7 +184,7 @@ chmod +x setup_local.sh
 ./setup_local.sh
 
 # Add your Anthropic API key
-echo "ANTHROPIC_API_KEY=sk-ant-api03-your-key-here" >> .env
+echo "ANTHROPIC_API_KEY=your-key-here" >> .env
 ```
 
 #### 2. Start Backend
@@ -378,7 +361,7 @@ Contributions are welcome! Areas we're looking to improve:
 - Kubernetes cluster management
 - Terraform/IaC integration
 - Multi-server orchestration
-- Rollback & disaster recovery
+- Rollback & incident response
 - Cost optimization recommendations
 
 ---
@@ -395,14 +378,6 @@ Contributions are welcome! Areas we're looking to improve:
 
 ---
 
-## 🎓 Who Should Use Ping?
-
-### **Perfect For:**
-- 🚀 **Startups**: Move fast without DevOps overhead
-- 👨‍💻 **Developers**: Focus on code, not server management
-- 🎓 **Students**: Learn DevOps by seeing best practices
-- 💼 **Small Teams**: Automate ops without hiring specialists
-- 🔧 **DevOps Engineers**: Automate repetitive tasks
 
 ### **Use Cases:**
 - Production server deployments
@@ -418,28 +393,3 @@ Contributions are welcome! Areas we're looking to improve:
 
 MIT License - See [LICENSE](LICENSE) for details
 
----
-
-## 🙏 Acknowledgments
-
-- **Anthropic** for Claude Sonnet 4.5 - The brain behind Ping
-- **FastAPI** for the amazing Python web framework
-- **Next.js** for the incredible React framework
-- **Paramiko** for robust SSH implementation
-
----
-
-## 📧 Contact & Support
-
-- **GitHub**: [CadeNahama/ping-calhacks](https://github.com/CadeNahama/ping-calhacks)
-- **Issues**: [Report a bug](https://github.com/CadeNahama/ping-calhacks/issues)
-
----
-
-<div align="center">
-
-**Built with ❤️ for the DevOps community**
-
-⭐ Star us on GitHub if Ping helped you!
-
-</div>
