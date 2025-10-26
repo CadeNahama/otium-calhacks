@@ -274,20 +274,3 @@ curl http://localhost:8000/api/health
 
 You now have Ping running! 
 
-**Next Steps:**
-1. Read the [full README](README.md) for advanced features
-2. Check out [prompt optimization](PROMPT_OPTIMIZATION_CLAUDE.md) to understand the AI
-3. Explore the [API docs](http://localhost:8000/docs) for integration
-4. Join our community (coming soon!) to share tips
-
----
-
-<div align="center">
-
-**Need Help?**
-
-[📖 Full Documentation](README.md) • [🐛 Report Issue](https://github.com/CadeNahama/ping-calhacks/issues) • [⭐ Star on GitHub](https://github.com/CadeNahama/ping-calhacks)
-
-**Happy Automating! 🚀**
-
-</div>
