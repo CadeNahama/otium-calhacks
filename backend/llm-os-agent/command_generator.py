@@ -9,6 +9,11 @@ import subprocess
 import os
 from typing import Dict, Any, List, Optional
 from openai import OpenAI
+# --- NEW FETCH.AI IMPORTS ---
+from uagents import Agent, Context, Protocol
+from .protocols import PlanRequest, CommandPlan, CommandStepModel
+# --- END NEW IMPORTS ---
+
 
 # Configuration constants
 DEFAULT_TIMEOUT = 5
@@ -48,6 +53,12 @@ SERVICE_MAPPINGS = {
         'httpd': 'apache2',
     }
 }
+
+# Define the Inference AEA instance
+INFERENCE_SEED = os.getenv("INFERENCE_AGENT_SEED", "otium_inference_agent_seed")
+inference_agent = Agent(name="InferenceAEA", seed=INFERENCE_SEED)
+# Define the Inference Protocol
+inference_protocol = Protocol(name="InferenceProtocol", version="0.1")
 
 
 class CommandGenerator:
@@ -107,10 +118,10 @@ class CommandGenerator:
     def _create_system_prompt(self) -> str:
         """Create system prompt with system context"""
         os_name = self.system_context.get('os_name', 'Unknown')
-        os_version = self.system_context.get('os_version', '')
-        os_family = self.system_context.get('os_family', 'unknown')
-        package_manager = self.system_context.get('package_manager', 'unknown')
-        service_manager = self.system_context.get('service_manager', 'unknown')
+        os_version = self.system_context.get('os_version', 'Unknown')
+        os_family = self.system_context.get('os_family', 'Unknown')
+        package_manager = self.system_context.get('package_manager', 'Unknown')
+        service_manager = self.system_context.get('service_manager', 'Unknown')
         available_tools = self.system_context.get('available_tools', [])
         memory_available = self.system_context.get('memory_available', 'Unknown')
         disk_available = self.system_context.get('disk_available', 'Unknown')
@@ -455,3 +466,54 @@ if __name__ == "__main__":
     generator = CommandGenerator(test_context, api_key="test")
     result = generator.generate_commands("Install nginx and configure as proxy")
     print(json.dumps(result, indent=2))
+    
+    
+    
+@inference_protocol.on_message(model=PlanRequest, replies=CommandPlan)
+async def handle_plan_request(ctx: Context, sender: str, msg: PlanRequest):
+    """Handles requests for command plan generation."""
+    try:
+        # 1. Instantiate the CommandGenerator with received context
+        api_key = os.getenv('OPENAI_API_KEY') # Use environment variable
+        generator = CommandGenerator(msg.system_context, api_key=api_key)
+        
+        # 2. Generate command plan
+        command_plan_dict = generator.generate_commands(msg.user_request)
+        
+        # 3. Convert generated plan (dict) to CommandPlan Model for transport
+        steps = [
+            CommandStepModel(**step) 
+            for step in command_plan_dict.get('steps', [])
+        ]
+        
+        await ctx.send(
+            sender,
+            CommandPlan(
+                command_plan=steps,
+                intent=command_plan_dict.get('intent', 'Unknown'),
+                action=command_plan_dict.get('action', 'Unknown'),
+                risk_level=command_plan_dict.get('risk_level', 'medium'),
+                explanation=command_plan_dict.get('explanation', 'No explanation')
+            )
+        )
+
+    except Exception as e:
+        ctx.logger.error(f"Command generation failed: {e}")
+        await ctx.send(
+            sender, 
+            CommandPlan(
+                command_plan=[],
+                intent="Error",
+                action="Error",
+                risk_level="critical",
+                explanation=f"Agent failed to generate plan: {str(e)}",
+                error=str(e)
+            )
+        )
+
+# Register the protocol
+inference_agent.include(inference_protocol)
+
+if __name__ == "__main__":
+    print(f"Starting Inference AEA at {inference_agent.address}")
+    inference_agent.run()
