@@ -1,13 +1,13 @@
 # Ping - AI-Powered System Administration
 
-Full-stack application for AI-powered Linux system administration with SSH support. Built for hackathons with **session-based in-memory storage** - no database required!
+Full-stack application for AI-powered Linux system administration with SSH support. Features **session-based in-memory storage** - no database required!
 
 ## 🏗️ Project Structure
 
 This is a monorepo containing both frontend and backend:
 
 ```
-CALHACKS-OTIUM/
+PING/
 ├── backend/          # Python FastAPI backend (in-memory storage)
 │   └── llm-os-agent/ # Main application code
 └── frontend/         # Next.js frontend
@@ -175,13 +175,13 @@ npm run dev
 ## 📝 Development Notes
 
 - **Storage**: In-memory (session-based) - all data lost on restart
-- **Authentication**: Auto-login with `demo_user` for hackathon demos
+- **Authentication**: Auto-login with `demo_user` for easy testing
 - **Backend**: FastAPI on port 8000
 - **Frontend**: Next.js on port 3000
 - **No Database**: No Docker, PostgreSQL, or database setup needed!
 - **No External Services**: Everything runs locally
 
-## 🎓 For Hackathon Judges
+## 🎯 Demo Setup
 
 This is a **super simple** local setup requiring:
 1. Python 3.8+ (for backend)
