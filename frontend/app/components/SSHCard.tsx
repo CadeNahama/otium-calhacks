@@ -34,14 +34,14 @@ export function SSHCard({ userId }: SSHCardProps) {
 
   // SESSION-BASED: Load last connection details from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem(`otium_last_connection_${userId}`);
+    const saved = localStorage.getItem(`ping_last_connection_${userId}`);
     if (saved) {
       try {
         const lastConn = JSON.parse(saved);
         setLastConnection(lastConn);
       } catch (error) {
         console.error('Failed to parse saved connection:', error);
-        localStorage.removeItem(`otium_last_connection_${userId}`);
+        localStorage.removeItem(`ping_last_connection_${userId}`);
       }
     }
   }, [userId]);
@@ -53,7 +53,7 @@ export function SSHCard({ userId }: SSHCardProps) {
       username: connectionData.username,
       port: connectionData.port
     };
-    localStorage.setItem(`otium_last_connection_${userId}`, JSON.stringify(toSave));
+    localStorage.setItem(`ping_last_connection_${userId}`, JSON.stringify(toSave));
     setLastConnection(toSave);
   };
 
@@ -143,7 +143,7 @@ export function SSHCard({ userId }: SSHCardProps) {
       }, userId);
 
       // SESSION-BASED: Clear saved connection on manual disconnect
-      localStorage.removeItem(`otium_last_connection_${userId}`);
+      localStorage.removeItem(`ping_last_connection_${userId}`);
       setLastConnection(null);
       
       showSuccess(`Disconnected from ${hostname}`);

@@ -25,7 +25,7 @@ export function UserProvider({ children }: UserProviderProps) {
   // Simple local auth - auto-login with demo user for hackathon
   useEffect(() => {
     // Check localStorage for existing user
-    const storedUserId = localStorage.getItem('otium_user_id');
+    const storedUserId = localStorage.getItem('ping_user_id');
     
     if (storedUserId) {
       setUserId(storedUserId);
@@ -35,7 +35,7 @@ export function UserProvider({ children }: UserProviderProps) {
       const demoUserId = 'demo_user';
       setUserId(demoUserId);
       setIsAuthenticated(true);
-      localStorage.setItem('otium_user_id', demoUserId);
+      localStorage.setItem('ping_user_id', demoUserId);
     }
     
       setIsLoading(false);
@@ -44,13 +44,13 @@ export function UserProvider({ children }: UserProviderProps) {
   const login = (id: string) => {
     setUserId(id);
     setIsAuthenticated(true);
-    localStorage.setItem('otium_user_id', id);
+    localStorage.setItem('ping_user_id', id);
   };
 
   const logout = () => {
     setUserId('');
     setIsAuthenticated(false);
-    localStorage.removeItem('otium_user_id');
+    localStorage.removeItem('ping_user_id');
   };
 
   const value: UserContextType = {

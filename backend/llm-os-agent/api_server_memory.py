@@ -243,7 +243,7 @@ async def connect_to_server(
     
     try:
         # Create or get user
-        memory_storage.create_or_get_user(user_id, f"{user_id}@otium.local")
+        memory_storage.create_or_get_user(user_id, f"{user_id}@ping.local")
         
         # Initialize user storage
         if user_id not in user_ssh_managers:

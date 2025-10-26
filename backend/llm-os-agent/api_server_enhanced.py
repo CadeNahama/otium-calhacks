@@ -376,7 +376,7 @@ async def connect_to_server(
         
         # Create or get WorkOS user (not tied to server credentials)
         print(f"[DEBUG] Creating/getting WorkOS user {user_id}...")
-        user = db_service.create_or_get_user(user_id, f"{user_id}@otium.app")  # Use WorkOS ID for email
+        user = db_service.create_or_get_user(user_id, f"{user_id}@ping.app")  # Use WorkOS ID for email
         print(f"[DEBUG] WorkOS user created/retrieved: {user}")
         
         # Initialize user storage

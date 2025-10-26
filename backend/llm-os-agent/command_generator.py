@@ -16,16 +16,9 @@ DEFAULT_CLAUDE_MODEL = "claude-sonnet-4-5-20250929"  # Claude Sonnet 4.5 - Lates
 DEFAULT_CLAUDE_MAX_TOKENS = 2000  # Increased for comprehensive DevOps responses
 DEFAULT_CLAUDE_TEMPERATURE = 0.1  # Low temperature for consistent, reliable commands
 
-# Fast pattern matching keywords
-FAST_PATTERNS = {
-    'system_info': ['system info', 'system status', 'show system', 'get info'],
-    'process_list': ['list process', 'show process', 'ps aux', 'running process'],
-    'memory_check': ['memory usage', 'check memory', 'free memory', 'ram usage'],
-    'disk_usage': ['disk usage', 'disk space', 'check disk', 'df -h'],
-    'network_check': ['network connection', 'netstat', 'listening port', 'network status'],
-    'nginx_install': ['install nginx', 'setup nginx', 'nginx proxy', 'nginx server'],
-    'apache_install': ['install apache', 'setup apache', 'apache server', 'install httpd', 'setup httpd']
-}
+# Fast pattern matching REMOVED - All requests now go to Claude Sonnet 4.5
+# This ensures consistent, high-quality, context-aware command generation
+# No more bypasses or incomplete responses
 
 # Package name mappings by OS family
 PACKAGE_MAPPINGS = {
@@ -63,36 +56,42 @@ class CommandGenerator:
             self.anthropic_client = None
     
     def generate_commands(self, user_request: str) -> Dict[str, Any]:
-        """Generate commands based on system context and user request"""
+        """Generate commands using Claude Sonnet 4.5 with optimized context-aware prompts"""
         try:
-            # Try fast pattern matching first
-            fast_response = self._try_fast_pattern_match(user_request)
-            if fast_response:
-                print("⚡ Using fast pattern matching...")
-                return fast_response
-            
-            # Generate AI-powered response
+            # Always use Claude for comprehensive, context-aware command generation
+            print("🤖 Using Claude Sonnet 4.5 with optimized prompts...")
             return self._generate_ai_response(user_request)
             
         except Exception as e:
-            print(f"🔍 Error in generate_commands: {e}")
-            return self._create_simple_fallback(user_request)
+            print(f"❌ Error in generate_commands: {e}")
+            # Only use fallback if Claude completely fails
+            return self._create_error_fallback(user_request, str(e))
     
-    def _try_fast_pattern_match(self, user_request: str) -> Optional[Dict[str, Any]]:
-        """Try to match common patterns quickly without AI"""
-        user_lower = user_request.lower()
-        
-        for pattern_type, patterns in FAST_PATTERNS.items():
-            if any(pattern in user_lower for pattern in patterns):
-                return self._create_simple_fallback(pattern_type)
-        
-        return None
+    def _create_error_fallback(self, user_request: str, error_msg: str) -> Dict[str, Any]:
+        """Create fallback response only when Claude completely fails"""
+        return {
+            "intent": "error",
+            "action": "api_failure",
+            "packages": [],
+            "services": [],
+            "risk_level": "low",
+            "explanation": f"Failed to generate commands using Claude API: {error_msg}. Please check your API key and try again.",
+            "steps": [
+                {
+                    "step": 1,
+                    "command": "echo 'Error: Could not generate commands. Please try again.'",
+                    "description": "API Error - Claude Sonnet 4.5 could not be reached",
+                    "expected_output": "Error message"
+                }
+            ]
+        }
     
     def _generate_ai_response(self, user_request: str) -> Dict[str, Any]:
-        """Generate AI-powered command response"""
+        """Generate AI-powered command response using Claude Sonnet 4.5"""
         if not self.anthropic_client:
-            print("⚠️  No Anthropic API key provided, using fallback")
-            return self._create_simple_fallback(user_request)
+            error_msg = "Anthropic API client not initialized. Please check ANTHROPIC_API_KEY."
+            print(f"⚠️  {error_msg}")
+            return self._create_error_fallback(user_request, error_msg)
         
         system_prompt = self._create_system_prompt()
         user_prompt = self._create_user_prompt(user_request)
@@ -310,7 +309,25 @@ Think through:
 • Are there any dependencies or prerequisites?
 • How should success be verified?
 
-Respond with ONLY the JSON object - no markdown, no explanations outside JSON."""
+═══════════════════════════════════════════════════════════════
+CRITICAL OUTPUT FORMAT REQUIREMENTS
+═══════════════════════════════════════════════════════════════
+⚠️  RESPOND WITH ONLY THE RAW JSON OBJECT - NOTHING ELSE!
+
+DO NOT include:
+❌ Markdown code blocks (```json ... ```)
+❌ Explanatory text before or after the JSON
+❌ Comments in the JSON (// or /* */)
+❌ Trailing commas in arrays or objects
+❌ Any text outside the JSON object
+
+DO include:
+✅ Pure, valid JSON starting with {{ and ending with }}
+✅ All required fields (intent, action, packages, services, risk_level, explanation, steps)
+✅ Properly escaped strings (use \\" for quotes inside strings)
+✅ Valid JSON syntax throughout
+
+Your ENTIRE response should be parseable by JSON.parse() with no modifications."""
     
     def _call_claude(self, user_prompt: str, system_prompt: str) -> str:
         """Call Anthropic Claude API"""
@@ -329,32 +346,175 @@ Respond with ONLY the JSON object - no markdown, no explanations outside JSON.""
             return f"Error calling Anthropic Claude: {e}"
     
     def _parse_and_validate_ai_response(self, response: str, user_request: str) -> Dict[str, Any]:
-        """Parse AI response and validate commands"""
+        """Parse and validate Claude's response"""
         try:
-            print(f"🔍 AI Response: {response[:200]}...")
+            print(f"🔍 Claude Response: {response[:200]}...")
             
             # Extract JSON from response
             parsed_response = self._extract_json_from_response(response)
             if not parsed_response:
-                return self._create_simple_fallback(user_request)
+                error_msg = "Could not extract valid JSON from Claude's response"
+                print(f"❌ {error_msg}")
+                return self._create_error_fallback(user_request, error_msg)
             
-            # Validate and fix commands
+            # Validate and fix commands for OS-specific compatibility
             self._validate_and_fix_commands(parsed_response)
             
+            print(f"✅ Successfully generated {len(parsed_response.get('steps', []))} commands")
             return parsed_response
             
         except Exception as e:
-            print(f"🔍 Error parsing AI response: {e}")
-            return self._create_simple_fallback(user_request)
+            print(f"❌ Error parsing Claude response: {e}")
+            return self._create_error_fallback(user_request, f"Parse error: {str(e)}")
     
     def _extract_json_from_response(self, response: str) -> Optional[Dict[str, Any]]:
-        """Extract JSON from AI response"""
+        """Extract and clean JSON from Claude's response with robust error handling"""
         import re
-        json_match = re.search(r'\{.*\}', response, re.DOTALL)
-        if json_match:
+        
+        try:
+            # Step 1: Strip markdown code blocks (```json ... ``` or ``` ... ```)
+            response = re.sub(r'^```(?:json)?\s*\n', '', response, flags=re.MULTILINE)
+            response = re.sub(r'\n```\s*$', '', response, flags=re.MULTILINE)
+            
+            # Step 2: Extract JSON object (find outermost braces)
+            json_match = re.search(r'\{.*\}', response, re.DOTALL)
+            if not json_match:
+                print("❌ No JSON object found in response")
+                return None
+            
             json_str = json_match.group()
-            print(f"🔍 Found JSON: {json_str[:200]}...")
-            return json.loads(json_str)
+            print(f"🔍 Extracted JSON ({len(json_str)} chars): {json_str[:200]}...")
+            
+            # Step 3: Clean the JSON string
+            json_str = self._clean_json_string(json_str)
+            
+            # Step 4: Try to parse
+            parsed = json.loads(json_str)
+            print(f"✅ Successfully parsed JSON with {len(parsed.get('steps', []))} steps")
+            return parsed
+            
+        except json.JSONDecodeError as e:
+            print(f"❌ JSON decode error at line {e.lineno}, col {e.colno}: {e.msg}")
+            print(f"📍 Error context: ...{json_str[max(0, e.pos-50):e.pos+50]}...")
+            
+            # Try to fix common JSON errors and retry
+            try:
+                fixed_json = self._try_fix_json_errors(json_str, e)
+                if fixed_json:
+                    parsed = json.loads(fixed_json)
+                    print(f"✅ Fixed and parsed JSON with {len(parsed.get('steps', []))} steps")
+                    return parsed
+            except Exception as fix_error:
+                print(f"❌ Could not auto-fix JSON: {fix_error}")
+            
+            return None
+            
+        except Exception as e:
+            print(f"❌ Unexpected error extracting JSON: {e}")
+            return None
+    
+    def _clean_json_string(self, json_str: str) -> str:
+        """Clean common JSON formatting issues from Claude's response"""
+        import re
+        
+        # Remove // style comments (not valid in JSON)
+        json_str = re.sub(r'//[^\n]*', '', json_str)
+        
+        # Remove /* */ style comments
+        json_str = re.sub(r'/\*.*?\*/', '', json_str, flags=re.DOTALL)
+        
+        # Fix trailing commas before closing braces/brackets
+        json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+        
+        # CRITICAL: Escape unescaped control characters inside string values
+        # This fixes "Invalid control character at" errors from Claude
+        json_str = self._escape_control_characters_in_strings(json_str)
+        
+        # Remove any non-JSON text before first { or after last }
+        json_str = json_str.strip()
+        
+        return json_str
+    
+    def _escape_control_characters_in_strings(self, json_str: str) -> str:
+        """Escape literal control characters (newlines, tabs, etc.) ONLY inside JSON string values"""
+        import re
+        
+        # This regex finds string values in JSON and escapes control characters within them
+        # It matches: "key": "value with\npotential\ncontrol chars"
+        
+        def escape_string_content(match):
+            """Escape control characters inside a JSON string value"""
+            string_value = match.group(0)
+            
+            # Only process if it's a string value (starts with ")
+            if not string_value.startswith('"'):
+                return string_value
+            
+            # Escape control characters inside the string
+            string_value = string_value.replace('\r\n', ' ')  # Replace Windows line endings with space
+            string_value = string_value.replace('\n', ' ')     # Replace Unix newlines with space
+            string_value = string_value.replace('\r', ' ')     # Replace carriage returns with space
+            string_value = string_value.replace('\t', ' ')     # Replace tabs with space
+            
+            # Replace other control characters (ASCII 0-31) with space
+            for i in range(32):
+                if chr(i) not in [' ', '\n', '\r', '\t']:  # Don't double-process
+                    string_value = string_value.replace(chr(i), ' ')
+            
+            return string_value
+        
+        # Match string values in JSON (handles escaped quotes AND newlines inside strings)
+        # Pattern: "..." where ... can contain escaped quotes \" AND literal newlines
+        # We use DOTALL flag so . matches newlines too
+        pattern = r'"(?:[^"\\]|\\.|[\n\r])*?"'
+        
+        try:
+            json_str = re.sub(pattern, escape_string_content, json_str, flags=re.DOTALL)
+        except Exception as e:
+            print(f"⚠️ Could not escape control characters: {e}")
+            # If regex fails, do a simpler global replace (may break JSON structure but better than crash)
+            json_str = json_str.replace('\r\n', ' ')
+            json_str = json_str.replace('\n', ' ')
+            json_str = json_str.replace('\r', ' ')
+            json_str = json_str.replace('\t', ' ')
+        
+        return json_str
+    
+    def _try_fix_json_errors(self, json_str: str, error: json.JSONDecodeError) -> Optional[str]:
+        """Try to automatically fix common JSON errors"""
+        import re
+        
+        # If the error is near the end, the JSON might be truncated
+        if error.pos > len(json_str) - 100:
+            print("🔧 Attempting to fix truncated JSON...")
+            
+            # Count unclosed braces and brackets
+            open_braces = json_str.count('{') - json_str.count('}')
+            open_brackets = json_str.count('[') - json_str.count(']')
+            
+            # Close any unclosed structures
+            fixed = json_str
+            for _ in range(open_brackets):
+                fixed += ']'
+            for _ in range(open_braces):
+                fixed += '}'
+            
+            return fixed
+        
+        # If error is "Expecting ',' delimiter", try adding missing commas
+        if "Expecting ',' delimiter" in error.msg:
+            print("🔧 Attempting to fix missing comma...")
+            # This is complex - let Claude handle it by regenerating
+            return None
+        
+        # If error is "Expecting property name", there's a trailing comma
+        if "Expecting property name" in error.msg:
+            print("🔧 Removing trailing comma...")
+            # Already handled in _clean_json_string, but try again
+            fixed = re.sub(r',(\s*})', r'\1', json_str)
+            fixed = re.sub(r',(\s*])', r'\1', fixed)
+            return fixed
+        
         return None
     
     def _validate_and_fix_commands(self, parsed_response: Dict[str, Any]) -> None:

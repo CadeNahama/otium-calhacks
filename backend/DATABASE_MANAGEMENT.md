@@ -7,7 +7,7 @@ This guide shows you how to set up, manage, and view all the databases and featu
 ### 1. **Add PostgreSQL to Railway**
 ```bash
 # Navigate to your backend directory
-cd /Users/cadenahama/CALHACKS-OTIUM/backend
+cd /Users/cadenahama/CALHACKS-PING/backend
 
 # Add PostgreSQL database
 railway add --database postgres

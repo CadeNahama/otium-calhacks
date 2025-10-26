@@ -24,7 +24,7 @@ def setup_database():
         print("📋 Please set it using one of these methods:")
         print("   1. Railway CLI: railway variables set DATABASE_URL=your_postgres_url")
         print("   2. Environment: export DATABASE_URL=your_postgres_url")
-        print("   3. For local testing: export DATABASE_URL=sqlite:///./otium.db")
+        print("   3. For local testing: export DATABASE_URL=sqlite:///./ping.db")
         return False
     
     print(f"✅ Database URL found: {database_url[:50]}...")

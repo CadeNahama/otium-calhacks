@@ -12,7 +12,7 @@ from sqlalchemy import create_engine, text
 from database import Base
 
 # Get database URL from environment
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///../otium.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///../ping.db")
 
 print(f"Connecting to database: {DATABASE_URL}")
 engine = create_engine(DATABASE_URL)

@@ -213,7 +213,7 @@ class StepEvaluation(Base):
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     # For development, use SQLite
-    DATABASE_URL = "sqlite:///./otium.db"
+    DATABASE_URL = "sqlite:///./ping.db"
     print("⚠️  DATABASE_URL not set, using SQLite for development")
 
 engine = create_engine(DATABASE_URL)

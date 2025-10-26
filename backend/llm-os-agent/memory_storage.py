@@ -30,7 +30,7 @@ class InMemoryStorage:
         if user_id not in self.users:
             self.users[user_id] = {
                 "id": user_id,
-                "email": email or f"{user_id}@otium.local",
+                "email": email or f"{user_id}@ping.local",
                 "role": "operator",
                 "created_at": datetime.utcnow(),
                 "last_login": datetime.utcnow(),

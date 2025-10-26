@@ -81,7 +81,7 @@ export default function TestEnhancedPage() {
             ← Back to Dashboard
           </a>
           <a
-            href="https://otium-backend-production.up.railway.app/api/health"
+            href="https://ping-backend-production.up.railway.app/api/health"
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted/20 transition-colors"

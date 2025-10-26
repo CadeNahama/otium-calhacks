@@ -29,7 +29,7 @@ def test_create_command():
     import uuid
     
     # Connect to database
-    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./otium.db")
+    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./ping.db")
     engine = create_engine(DATABASE_URL)
     Session = sessionmaker(bind=engine)
     session = Session()
