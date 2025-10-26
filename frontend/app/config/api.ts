@@ -1,9 +1,9 @@
 // API Configuration
 export const API_CONFIG = {
-  // Otium Backend URL - can be overridden by environment variable
-  OTIUM_BACKEND_URL: process.env.NEXT_PUBLIC_API_URL || 'https://otium-backend-production.up.railway.app',
+  // Otium Backend URL - Local development
+  OTIUM_BACKEND_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
   
-  // API endpoints - now pointing directly to Railway backend
+  // API endpoints - pointing to local backend
   ENDPOINTS: {
     SSH: {
       CONNECT: '/api/connect',

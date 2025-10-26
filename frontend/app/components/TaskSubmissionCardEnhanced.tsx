@@ -70,6 +70,7 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
   const [approvalStatus, setApprovalStatus] = useState<CommandResponse['approval_status'] | null>(null);
   const [showRejectedSteps, setShowRejectedSteps] = useState(false);
   const [rejectionReasons, setRejectionReasons] = useState<{[key: number]: string}>({});
+  const [executionResults, setExecutionResults] = useState<{[key: number]: any}>({});
   
   const [formData, setFormData] = useState({
     taskRequest: ''
@@ -102,6 +103,7 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
     setFormData(prev => ({ ...prev, [name]: value }));
     setGeneratedCommand(null);
     setApprovalStatus(null);
+    setExecutionResults({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -190,6 +192,14 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
 
       if (response.approval_status) {
         setApprovalStatus(response.approval_status);
+      }
+      
+      // Store execution result
+      if (response.execution_result) {
+        setExecutionResults(prev => ({
+          ...prev,
+          [stepIndex]: response.execution_result
+        }));
       }
       
       if (approved) {
@@ -588,6 +598,45 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
                             <span className="text-xs opacity-75">- {cmd.reason}</span>
                           )}
                         </div>
+                      </div>
+                    )}
+
+                    {/* Execution Results */}
+                    {executionResults[index] && (
+                      <div className="mt-3 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-semibold text-gray-300">Execution Output</span>
+                          <div className="flex items-center gap-3 text-xs">
+                            <span className={`font-medium ${
+                              executionResults[index].success ? 'text-green-400' : 'text-red-400'
+                            }`}>
+                              {executionResults[index].success ? '✓ Success' : '✗ Failed'}
+                            </span>
+                            {executionResults[index].exit_code !== undefined && (
+                              <span className="text-gray-400">
+                                Exit Code: {executionResults[index].exit_code}
+                              </span>
+                            )}
+                            {executionResults[index].execution_time && (
+                              <span className="text-gray-400">
+                                {executionResults[index].execution_time.toFixed(3)}s
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {executionResults[index].output && (
+                          <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">
+                            {executionResults[index].output}
+                          </pre>
+                        )}
+                        {executionResults[index].stderr && (
+                          <div className="mt-2">
+                            <span className="text-xs font-semibold text-red-400">Error Output:</span>
+                            <pre className="text-xs text-red-300 font-mono whitespace-pre-wrap overflow-x-auto mt-1">
+                              {executionResults[index].stderr}
+                            </pre>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

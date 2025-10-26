@@ -130,14 +130,12 @@ async def shutdown_event():
     background_task_running = False
     print("[DEBUG] Stopped inactivity cleanup background task")
 
-# CORS Configuration - Support all Vercel deployments + custom domains + local dev
+# CORS Configuration - Local development only
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"^https://[a-z0-9-]+\.vercel\.app$",  # All *.vercel.app domains
     allow_origins=[
-        "https://app.otiumtech.dev",     # Custom frontend domain
         "http://localhost:3000",        # Local development
-        "https://localhost:3000",       # Local HTTPS development
+        "http://127.0.0.1:3000",        # Alternative localhost
     ],
     allow_credentials=True,
     allow_methods=["*"],
