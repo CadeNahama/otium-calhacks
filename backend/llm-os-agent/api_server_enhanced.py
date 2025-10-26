@@ -1203,7 +1203,7 @@ async def initialize_agent(user_id: str, connection_id: str):
     try:
         ssh_manager = user_ssh_managers[user_id]
         agent = Agent(
-            api_key=os.getenv("OPENAI_API_KEY"),
+            api_key=os.getenv("ANTHROPIC_API_KEY"),
             ssh_manager=ssh_manager,
             connection_id=connection_id
         )

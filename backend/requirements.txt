@@ -1,8 +1,8 @@
 # Ping AI Agent - In-Memory Version
 # Session-based storage - no database required
 
-# Core AI and OpenAI Integration
-openai>=1.3.0
+# Core AI and Anthropic Claude Integration
+anthropic>=0.18.0
 
 # FastAPI and Web Framework
 fastapi>=0.104.0

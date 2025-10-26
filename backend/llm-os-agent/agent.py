@@ -20,7 +20,7 @@ class Agent:
     def __init__(self, api_key: str, ssh_manager, connection_id: str):
         # Validate required parameters
         if not api_key:
-            raise ValueError("OpenAI API key is required")
+            raise ValueError("Anthropic API key is required")
         if not ssh_manager:
             raise ValueError("SSH manager is required")
         if not connection_id:
@@ -212,12 +212,12 @@ def main():
         print(f"⚠️  Error loading .env file: {e}")
     
     # Check for API key
-    api_key = os.getenv('OPENAI_API_KEY')
+    api_key = os.getenv('ANTHROPIC_API_KEY')
     if not api_key:
-        print("❌ No OpenAI API key found. Set OPENAI_API_KEY environment variable.")
+        print("❌ No Anthropic API key found. Set ANTHROPIC_API_KEY environment variable.")
         return 1
     
-    print(f"✅ OpenAI API key found: {api_key[:20]}...")
+    print(f"✅ Anthropic API key found: {api_key[:20]}...")
     
     # Note: Agent is now API-only, no interactive mode needed
     print("🤖 Ping Agent designed for API use only")

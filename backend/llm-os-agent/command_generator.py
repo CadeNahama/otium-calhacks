@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Command Generator for Ping AI Agent - Phase 1 Simplified (OpenAI Only)
+Command Generator for Ping AI Agent - Using Anthropic Claude
 Generates appropriate commands based on system context and user requests
 """
 
@@ -8,13 +8,13 @@ import json
 import subprocess
 import os
 from typing import Dict, Any, List, Optional
-from openai import OpenAI
+from anthropic import Anthropic
 
 # Configuration constants
 DEFAULT_TIMEOUT = 5
-DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo"
-DEFAULT_OPENAI_MAX_TOKENS = 1000
-DEFAULT_OPENAI_TEMPERATURE = 0.1
+DEFAULT_CLAUDE_MODEL = "claude-3-5-sonnet-20241022"
+DEFAULT_CLAUDE_MAX_TOKENS = 1000
+DEFAULT_CLAUDE_TEMPERATURE = 0.1
 
 # Fast pattern matching keywords
 FAST_PATTERNS = {
@@ -51,16 +51,16 @@ SERVICE_MAPPINGS = {
 
 
 class CommandGenerator:
-    """Generates appropriate commands based on system context - Phase 1 Simplified (OpenAI Only)"""
+    """Generates appropriate commands based on system context using Anthropic Claude"""
     
     def __init__(self, system_context: Dict[str, Any], api_key: str = None):
         self.system_context = system_context
         self.api_key = api_key
         
         if api_key:
-            self.openai_client = OpenAI(api_key=api_key)
+            self.anthropic_client = Anthropic(api_key=api_key)
         else:
-            self.openai_client = None
+            self.anthropic_client = None
     
     def generate_commands(self, user_request: str) -> Dict[str, Any]:
         """Generate commands based on system context and user request"""
@@ -90,16 +90,16 @@ class CommandGenerator:
     
     def _generate_ai_response(self, user_request: str) -> Dict[str, Any]:
         """Generate AI-powered command response"""
-        if not self.openai_client:
-            print("⚠️  No OpenAI API key provided, using fallback")
+        if not self.anthropic_client:
+            print("⚠️  No Anthropic API key provided, using fallback")
             return self._create_simple_fallback(user_request)
         
         system_prompt = self._create_system_prompt()
         user_prompt = self._create_user_prompt(user_request)
         
-        # Call OpenAI API
-        print("🤖 Using OpenAI API...")
-        response = self._call_openai(user_prompt, system_prompt)
+        # Call Anthropic Claude API
+        print("🤖 Using Anthropic Claude API...")
+        response = self._call_claude(user_prompt, system_prompt)
         
         # Parse and validate response
         return self._parse_and_validate_ai_response(response, user_request)
@@ -176,21 +176,21 @@ REMEMBER: Output must be a single valid JSON object with no text outside of it."
 
 Generate appropriate commands for this specific system. Consider the system context and generate commands that will work on this particular Linux distribution."""
     
-    def _call_openai(self, user_prompt: str, system_prompt: str) -> str:
-        """Call OpenAI API"""
+    def _call_claude(self, user_prompt: str, system_prompt: str) -> str:
+        """Call Anthropic Claude API"""
         try:
-            response = self.openai_client.chat.completions.create(
-                model=DEFAULT_OPENAI_MODEL,
+            response = self.anthropic_client.messages.create(
+                model=DEFAULT_CLAUDE_MODEL,
+                max_tokens=DEFAULT_CLAUDE_MAX_TOKENS,
+                temperature=DEFAULT_CLAUDE_TEMPERATURE,
+                system=system_prompt,
                 messages=[
-                    {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
-                ],
-                temperature=DEFAULT_OPENAI_TEMPERATURE,
-                max_tokens=DEFAULT_OPENAI_MAX_TOKENS
+                ]
             )
-            return response.choices[0].message.content
+            return response.content[0].text
         except Exception as e:
-            return f"Error calling OpenAI: {e}"
+            return f"Error calling Anthropic Claude: {e}"
     
     def _parse_and_validate_ai_response(self, response: str, user_request: str) -> Dict[str, Any]:
         """Parse AI response and validate commands"""

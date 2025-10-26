@@ -30,7 +30,7 @@ uvicorn api_server:app --reload
 
 3. **Set environment variables:**
    ```bash
-   railway variables set OPENAI_API_KEY=your_openai_api_key_here
+   railway variables set ANTHROPIC_API_KEY=your_anthropic_api_key_here
    ```
 
 4. **Deploy:**
@@ -40,7 +40,7 @@ uvicorn api_server:app --reload
 
 ### Environment Variables Required
 
-- `OPENAI_API_KEY`: Your OpenAI API key
+- `ANTHROPIC_API_KEY`: Your Anthropic Claude API key
 - `PORT`: Railway will set this automatically
 
 ### Build Configuration

@@ -28,7 +28,7 @@ DEFAULT_MAX_COMMANDS = 100
 DEFAULT_MAX_PRIORITY_LENGTH = 500
 
 # Environment variables
-ENV_OPENAI_API_KEY = "OPENAI_API_KEY"
+ENV_ANTHROPIC_API_KEY = "ANTHROPIC_API_KEY"
 ENV_DOTENV_PATH = ".env"
 
 # Status codes
@@ -141,8 +141,8 @@ user_ssh_managers: Dict[str, SSHManager] = {}  # user_id -> SSHManager
 def get_environment_info() -> Dict[str, Any]:
     """Get environment information for debugging"""
     return {
-        'openai_api_key_set': bool(os.getenv(ENV_OPENAI_API_KEY)),
-        'openai_api_key_value': os.getenv(ENV_OPENAI_API_KEY, 'NOT_SET')[:20] if os.getenv(ENV_OPENAI_API_KEY) else 'NOT_SET',
+        'anthropic_api_key_set': bool(os.getenv(ENV_ANTHROPIC_API_KEY)),
+        'anthropic_api_key_value': os.getenv(ENV_ANTHROPIC_API_KEY, 'NOT_SET')[:20] if os.getenv(ENV_ANTHROPIC_API_KEY) else 'NOT_SET',
         'current_working_directory': os.getcwd(),
         'env_file_exists': os.path.exists(ENV_DOTENV_PATH)
     }
@@ -351,7 +351,7 @@ async def initialize_agent(user_id: str, connection_id: str) -> Optional[Agent]:
         env_info = get_environment_info()
         print(f"🔍 Debug: Agent creation parameters:")
         print(f"   - user_id: {user_id}")
-        print(f"   - api_key: {'SET' if env_info['openai_api_key_set'] else 'NOT_SET'}")
+        print(f"   - api_key: {'SET' if env_info['anthropic_api_key_set'] else 'NOT_SET'}")
         print(f"   - ssh_manager: {'SET' if user_ssh_managers.get(user_id) else 'NOT_SET'}")
         print(f"   - connection_id: {connection_id}")
         
@@ -359,7 +359,7 @@ async def initialize_agent(user_id: str, connection_id: str) -> Optional[Agent]:
         ssh_manager = user_ssh_managers[user_id]
         
         agent = Agent(
-            api_key=os.getenv(ENV_OPENAI_API_KEY),
+            api_key=os.getenv(ENV_ANTHROPIC_API_KEY),
             ssh_manager=ssh_manager,
             connection_id=connection_id
         )

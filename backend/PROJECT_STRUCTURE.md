@@ -67,7 +67,7 @@
 ```bash
 DATABASE_URL=postgresql://...           # PostgreSQL connection
 PING_ENCRYPTION_KEY=...               # Fernet encryption key
-OPENAI_API_KEY=...                     # OpenAI API access
+ANTHROPIC_API_KEY=...                  # Anthropic Claude API access
 SSH_PRIVATE_KEY=...                    # SSH key for connections
 ```
 

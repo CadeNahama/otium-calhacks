@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Configuration management for LLM-OS Agent - Phase 1 Simplified (OpenAI Only)
+Configuration management for LLM-OS Agent - Using Anthropic Claude
 """
 import os
 import json
@@ -22,9 +22,9 @@ class Config:
                 "logs_dir": "logs"
             },
             "ai": {
-                "provider": "openai",
-                "openai": {
-                    "model": "gpt-3.5-turbo",
+                "provider": "anthropic",
+                "anthropic": {
+                    "model": "claude-3-5-sonnet-20241022",
                     "api_key": "",
                     "temperature": 0.1,
                     "max_tokens": 1000

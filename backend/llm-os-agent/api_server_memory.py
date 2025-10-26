@@ -719,12 +719,12 @@ async def initialize_agent(user_id: str, connection_id: str):
             
         ssh_manager = user_ssh_managers[user_id]
         
-        # Check OpenAI API key
-        api_key = os.getenv("OPENAI_API_KEY")
+        # Check Anthropic API key
+        api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
-            print(f"[ERROR] OpenAI API key not set")
+            print(f"[ERROR] Anthropic API key not set")
             return None
-        print(f"[DEBUG] OpenAI API key found: {api_key[:10]}...")
+        print(f"[DEBUG] Anthropic API key found: {api_key[:10]}...")
         
         # Check connection exists
         if not ssh_manager.is_connection_alive(connection_id):

@@ -33,8 +33,8 @@ if [ ! -f ".env" ]; then
     
     echo "📝 Creating .env file..."
     cat > .env << EOF
-# OpenAI API Configuration
-OPENAI_API_KEY=your_openai_api_key_here
+# Anthropic Claude API Configuration
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
 
 # Encryption Key
 PING_ENCRYPTION_KEY=$ENCRYPTION_KEY
@@ -45,7 +45,7 @@ HOST=0.0.0.0
 EOF
     
     echo "✅ .env file created with encryption key"
-    echo "⚠️  Please edit backend/.env and add your OPENAI_API_KEY"
+    echo "⚠️  Please edit backend/.env and add your ANTHROPIC_API_KEY"
 else
     echo "✅ .env file already exists"
 fi
@@ -54,7 +54,7 @@ echo ""
 echo "✅ Setup complete!"
 echo ""
 echo "📋 Next steps:"
-echo "1. Edit backend/.env and add your OPENAI_API_KEY"
+echo "1. Edit backend/.env and add your ANTHROPIC_API_KEY"
 echo "2. Start the backend server:"
 echo "   cd backend/llm-os-agent"
 echo "   source ../venv/bin/activate"
