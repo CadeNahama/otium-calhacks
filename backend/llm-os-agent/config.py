@@ -27,7 +27,7 @@ class Config:
                     "model": "claude-sonnet-4-5-20250929",
                     "api_key": "",
                     "temperature": 0.1,
-                    "max_tokens": 1000
+                    "max_tokens": 2000
                 }
             }
         }

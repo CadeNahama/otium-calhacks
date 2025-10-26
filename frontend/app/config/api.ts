@@ -27,14 +27,25 @@ export const API_CONFIG = {
   POLLING: {
     CONNECTION_STATUS: 5000, // 5 seconds
   },
+  
+  // Timeout configuration
+  TIMEOUTS: {
+    DEFAULT: 30000,        // 30 seconds for most operations
+    COMMAND_GENERATION: 90000,  // 90 seconds for Claude AI command generation (complex tasks)
+    CONNECTION: 20000,     // 20 seconds for SSH connections
+    STATUS: 10000,         // 10 seconds for status checks
+  },
 } as const;
 
 // API Helper function for multi-user support
+// Use API_CONFIG.TIMEOUTS.COMMAND_GENERATION for command submissions
+// Use API_CONFIG.TIMEOUTS.CONNECTION for SSH operations
+// Use API_CONFIG.TIMEOUTS.STATUS for status checks
 export const apiCall = async <T = unknown>(
   endpoint: string, 
   options: RequestInit = {}, 
   userId: string,
-  timeoutMs: number = 30000 // 30 second timeout
+  timeoutMs: number = 90000 // 90 second default timeout for Claude operations
 ): Promise<T> => {
   // Construct full URL by combining backend URL with endpoint
   const fullUrl = `${API_CONFIG.PING_BACKEND_URL}${endpoint}`;

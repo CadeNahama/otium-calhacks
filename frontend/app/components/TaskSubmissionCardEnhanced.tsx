@@ -80,10 +80,12 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
     if (!generatedCommand?.command_id) return;
 
     try {
+      // Use shorter timeout for status checks
       const status = await apiCall<CommandResponse['approval_status']>(
         `${API_CONFIG.ENDPOINTS.COMMANDS.BASE}/${generatedCommand.command_id}/approval-status`,
         { method: 'GET' },
-        userId
+        userId,
+        API_CONFIG.TIMEOUTS.STATUS
       );
       setApprovalStatus(status);
     } catch (error) {
@@ -133,10 +135,11 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
         priority: 'normal',
       };
       
+      // Use extended timeout for Claude command generation (complex tasks can take 60-90s)
       const data = await apiCall<CommandResponse>(API_CONFIG.ENDPOINTS.COMMANDS.SUBMIT, {
         method: 'POST',
         body: JSON.stringify(requestBody),
-      }, userId);
+      }, userId, API_CONFIG.TIMEOUTS.COMMAND_GENERATION);
 
       console.log('[TaskSubmissionCard] Task submission response:', data);
       console.log('[TaskSubmissionCard] approval_required:', data.approval_required);
