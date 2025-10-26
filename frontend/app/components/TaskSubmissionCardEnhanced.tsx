@@ -10,7 +10,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Send, CheckCircle, XCircle, Clock, Zap, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { CodeBlock } from './CodeBlock';
-import { CommandChatPanel } from './CommandChatPanel';
 import { useToast } from '../hooks/useToast';
 
 interface GeneratedCommand {
@@ -346,7 +345,7 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
   };
 
   return (
-    <Card className="h-fit border border-border/20 shadow-sm bg-card">
+    <Card className="h-full border border-border/20 shadow-sm bg-card flex flex-col">
       <CardHeader className="pb-8 pt-8 px-8">
         <div className="flex items-center justify-between">
           <div>
@@ -367,7 +366,7 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-8 px-8 pb-8">
+      <CardContent className="space-y-8 px-8 pb-8 flex-1 flex flex-col">
         {!activeConnection && (
           <div className="p-8 bg-muted/30 border border-border/30 rounded-2xl text-center">
             <div className="text-3xl mb-4">🔌</div>
@@ -681,13 +680,6 @@ export function TaskSubmissionCardEnhanced({ userId, onCommandStatusChange }: Ta
                 </p>
               </div>
             )}
-
-            {/* Chat Panel */}
-            <CommandChatPanel
-              commandId={generatedCommand.command_id}
-              userId={userId}
-              commands={generatedCommand.generated_commands}
-            />
 
             {/* Status Messages */}
             {generatedCommand.approval_required && (

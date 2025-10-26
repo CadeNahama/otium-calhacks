@@ -232,32 +232,6 @@ class DatabaseService:
         self.db.refresh(approval)
         return approval
     
-    def create_chat_message(self, command_id: str, sender: str, message: str, 
-                           message_type: str = "chat", metadata: dict = None) -> 'CommandMessage':
-        """Create a chat message for a command"""
-        from database import CommandMessage
-        chat_message = CommandMessage(
-            id=str(uuid.uuid4()),
-            command_id=command_id,
-            sender=sender,  # 'user' or 'ai'
-            message=message,
-            message_type=message_type,
-            metadata=metadata or {}
-        )
-        self.db.add(chat_message)
-        self.db.commit()
-        self.db.refresh(chat_message)
-        return chat_message
-    
-    def get_chat_messages(self, command_id: str, limit: int = 50) -> List['CommandMessage']:
-        """Get chat messages for a command"""
-        from database import CommandMessage
-        return self.db.query(CommandMessage)\
-            .filter(CommandMessage.command_id == command_id)\
-            .order_by(CommandMessage.created_at.asc())\
-            .limit(limit)\
-            .all()
-    
     def get_command_approvals(self, command_id: str) -> List[CommandApproval]:
         """Get all approvals for a command"""
         return self.db.query(CommandApproval).filter(

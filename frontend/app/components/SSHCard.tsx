@@ -169,11 +169,11 @@ export function SSHCard({ userId }: SSHCardProps) {
 
   return (
     <Card className="h-fit border border-border/20 shadow-sm bg-card">
-      <CardHeader className="pb-8 pt-8 px-8">
+      <CardHeader className="pb-4 pt-5 px-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="leading-tight">SSH</h3>
-            <p className="text-body-small text-muted-foreground mt-1 leading-relaxed">Secure server access</p>
+            <h3 className="text-base leading-tight">SSH</h3>
+            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">Secure server access</p>
           </div>
           
           {activeConnection && (
@@ -198,12 +198,12 @@ export function SSHCard({ userId }: SSHCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-8 px-8 pb-8">
+      <CardContent className="space-y-4 px-6 pb-5">
         {activeConnection && (
-          <div className="p-6 bg-muted/20 rounded-2xl border border-border/30">
+          <div className="p-4 bg-muted/20 rounded-xl border border-border/30">
             <div className="flex-1">
-              <h4 className="leading-tight mb-3">Connection Details</h4>
-              <div className="space-y-3 text-body-regular text-muted-foreground">
+              <h4 className="text-sm leading-tight mb-2">Connection Details</h4>
+              <div className="space-y-2 text-xs text-muted-foreground">
                 <p className="flex items-center gap-2">
                   <Globe className="w-4 h-4" />
                   <span className="font-medium text-foreground">{activeConnection.hostname}:{activeConnection.port}</span>
@@ -222,7 +222,7 @@ export function SSHCard({ userId }: SSHCardProps) {
         )}
 
         {!activeConnection && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* SESSION-BASED: Quick Reconnect Button */}
             {lastConnection && (
               <div className="p-4 bg-blue-50/50 border border-blue-200 rounded-xl">
@@ -246,9 +246,9 @@ export function SSHCard({ userId }: SSHCardProps) {
               </div>
             )}
 
-            <form onSubmit={handleConnect} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+            <form onSubmit={handleConnect} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
                   <Label htmlFor="hostname" className="text-body-small font-medium text-foreground">Hostname/IP</Label>
                   <div className="relative">
                     <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -265,7 +265,7 @@ export function SSHCard({ userId }: SSHCardProps) {
                   </div>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="port" className="text-body-small font-medium text-foreground">Port</Label>
                   <Input 
                     id="port"
@@ -282,8 +282,8 @@ export function SSHCard({ userId }: SSHCardProps) {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
                   <Label htmlFor="username" className="text-body-small font-medium text-foreground">Username</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -300,7 +300,7 @@ export function SSHCard({ userId }: SSHCardProps) {
                   </div>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="password" className="text-body-small font-medium text-foreground">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />

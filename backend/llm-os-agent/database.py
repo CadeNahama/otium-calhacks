@@ -87,7 +87,6 @@ class Command(Base):
     approvals = relationship("CommandApproval", back_populates="command")
     steps = relationship("CommandStep", back_populates="command_ref")
     state_snapshots = relationship("SystemStateSnapshot", back_populates="command_ref")
-    messages = relationship("CommandMessage", back_populates="command_ref")
 
 class CommandApproval(Base):
     __tablename__ = "command_approvals"
@@ -99,6 +98,7 @@ class CommandApproval(Base):
     approved = Column(Boolean, nullable=False)  # True for approve, False for reject
     approval_reason = Column(Text)  # Optional reason for approval/rejection
     approved_at = Column(DateTime, default=datetime.utcnow)
+    execution_result = Column(JSON)  # Execution result for this step
     
     # New state-aware approval fields
     step_id = Column(String, ForeignKey("command_steps.id"))  # Direct reference to specific step
@@ -110,20 +110,6 @@ class CommandApproval(Base):
     command = relationship("Command", back_populates="approvals")
     user = relationship("User", back_populates="command_approvals")
     step = relationship("CommandStep", back_populates="approvals")
-
-class CommandMessage(Base):
-    __tablename__ = "command_messages"
-    
-    id = Column(String, primary_key=True)
-    command_id = Column(String, ForeignKey("commands.id"), nullable=False)
-    sender = Column(String, nullable=False)  # 'user' or 'ai'
-    message = Column(Text, nullable=False)
-    message_type = Column(String, default="chat")  # 'chat', 'system', 'command_update'
-    message_metadata = Column(JSON)  # Additional context (e.g., which step was discussed)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    
-    # Relationships
-    command_ref = relationship("Command", back_populates="messages")
 
 class AuditLog(Base):
     __tablename__ = "audit_logs"

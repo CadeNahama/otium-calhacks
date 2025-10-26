@@ -82,16 +82,24 @@ export default function Dashboard() {
               </h1>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
-              <SSHCard userId={userId} />
-              <TaskSubmissionCardEnhanced 
-                userId={userId} 
-                onCommandStatusChange={() => {
-                  // Refresh command list when status changes
-                  setCommandRefreshTrigger(prev => prev + 1);
-                }}
-              />
-              <CommandPreviewCard userId={userId} refreshTrigger={commandRefreshTrigger} />
+            {/* New Layout: Task Submission (2/3 width) + Sidebar (1/3 width) */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+              {/* Left Side: Task Submission (takes 2 columns) */}
+              <div className="xl:col-span-2">
+                <TaskSubmissionCardEnhanced 
+                  userId={userId} 
+                  onCommandStatusChange={() => {
+                    // Refresh command list when status changes
+                    setCommandRefreshTrigger(prev => prev + 1);
+                  }}
+                />
+              </div>
+
+              {/* Right Side: SSH + Command History stacked (takes 1 column) */}
+              <div className="xl:col-span-1 space-y-8">
+                <SSHCard userId={userId} />
+                <CommandPreviewCard userId={userId} refreshTrigger={commandRefreshTrigger} />
+              </div>
             </div>
           </div>
         </main>

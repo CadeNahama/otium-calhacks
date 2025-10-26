@@ -67,6 +67,44 @@ def _default_encoder(obj):
 def serialize_command(cmd) -> dict:
     """Safely serialize a command object to JSON-compatible dict"""
     try:
+        # Build execution_results dynamically from step approvals - NO RACE CONDITIONS!
+        execution_results = {"success": None, "total_steps": 0, "successful_steps": 0, "failed_steps": 0, "skipped_steps": 0, "total_execution_time": 0, "step_results": []}
+        
+        if cmd.generated_commands:
+            execution_results["total_steps"] = len(cmd.generated_commands)
+            
+            # Get step approvals and build results
+            for i, step_cmd in enumerate(cmd.generated_commands):
+                # Find approval for this step
+                step_approval = next((approval for approval in cmd.approvals if approval.step_index == i), None)
+                
+                if step_approval and step_approval.execution_result:
+                    result = step_approval.execution_result
+                    execution_results["step_results"].append({
+                        "step": i,  # Frontend expects "step" not "step_index"
+                        "command": step_cmd.get('command', ''),
+                        "success": result.get('success', False),
+                        "status": result.get('status', 'unknown'),
+                        "output": result.get('output', ''),
+                        "stdout": result.get('output', ''),  # Also provide stdout for compatibility
+                        "stderr": result.get('stderr', ''),
+                        "error": result.get('error', ''),
+                        "exit_code": result.get('exit_code', -1),
+                        "execution_time": result.get('execution_time', 0)
+                    })
+                    
+                    if result.get('success', False):
+                        execution_results["successful_steps"] += 1
+                    else:
+                        execution_results["failed_steps"] += 1
+                    
+                    execution_results["total_execution_time"] += result.get('execution_time', 0)
+            
+            # Determine overall success
+            total_executed = execution_results["successful_steps"] + execution_results["failed_steps"]
+            if total_executed == execution_results["total_steps"]:
+                execution_results["success"] = execution_results["failed_steps"] == 0
+        
         # Build dict with safe field access - let FastAPI handle JSON serialization
         payload = {
             "id": str(cmd.id) if cmd.id else None,
@@ -83,7 +121,7 @@ def serialize_command(cmd) -> dict:
             "executed_at": cmd.executed_at.isoformat() if getattr(cmd, "executed_at", None) else None,
             "completed_at": cmd.completed_at.isoformat() if getattr(cmd, "completed_at", None) else None,
             "generated_commands": cmd.generated_commands or [],  # JSONB field
-            "execution_results": cmd.execution_results or {}     # JSONB field
+            "execution_results": execution_results  # Built dynamically - NO RACE CONDITIONS!
         }
         return payload  # Return plain dict, FastAPI handles JSON serialization
     except Exception as e:
@@ -674,61 +712,11 @@ async def approve_command_step(
                 
                 print(f"[DEBUG] Step execution result: {result}")
                 
-                # Save execution result to database
-                # CRITICAL: Use threading lock to prevent race conditions
-                with _execution_results_lock:
-                    # Re-query command to get latest execution_results
-                    # (another step might have saved results while we were executing)
-                    # IMPORTANT: Expire the session to force a fresh read from database
-                    db_service.db.expire_all()
-                    command = db_service.db.query(Command).filter(Command.id == command_id).first()
-                    
-                    # Get existing execution_results or create new structure
-                    existing_results = command.execution_results or {
-                        "success": None,
-                        "total_steps": len(command.generated_commands) if command.generated_commands else 0,
-                        "successful_steps": 0,
-                        "failed_steps": 0,
-                        "skipped_steps": 0,
-                        "total_execution_time": 0,
-                        "step_results": []
-                    }
-                    
-                    # Initialize step_results if it doesn't exist
-                    if "step_results" not in existing_results:
-                        existing_results["step_results"] = []
-                    
-                    # Add this step's result
-                    step_result = {
-                        "step_index": approval_request.step_index,
-                        "command": step_command.get('command', ''),
-                        "success": result.get('success', False),
-                        "status": result.get('status', 'unknown'),
-                        "output": result.get('output', ''),
-                        "stderr": result.get('stderr', ''),
-                        "error": result.get('error', ''),
-                        "exit_code": result.get('exit_code', -1),
-                        "execution_time": result.get('execution_time', 0)
-                    }
-                    existing_results["step_results"].append(step_result)
-                    
-                    # Update counters
-                    if result.get('success', False):
-                        existing_results["successful_steps"] = existing_results.get("successful_steps", 0) + 1
-                    else:
-                        existing_results["failed_steps"] = existing_results.get("failed_steps", 0) + 1
-                    
-                    existing_results["total_execution_time"] = existing_results.get("total_execution_time", 0) + result.get('execution_time', 0)
-                    
-                    # Update overall success status
-                    total_executed = existing_results.get("successful_steps", 0) + existing_results.get("failed_steps", 0)
-                    if total_executed == existing_results.get("total_steps", 0):
-                        # All steps executed - determine overall success
-                        existing_results["success"] = existing_results.get("failed_steps", 0) == 0
-                    
-                    # Save to database (this will acquire the lock again, but that's ok - same thread)
-                    db_service.update_command_execution_results(command_id, existing_results)
-                    print(f"[DEBUG] Saved execution result to database for step {approval_request.step_index}")
+                # Save execution result to database - store on step approval
+                print(f"[DEBUG] Saving execution result for step {approval_request.step_index}")
+                approval.execution_result = result
+                db_service.db.commit()
+                print(f"[DEBUG] Saved execution result to database for step {approval_request.step_index}")
                 
                 # Log the execution
                 db_service.log_action(
@@ -1162,106 +1150,6 @@ async def disconnect_ssh(request: Request, user_id: str = Depends(require_auth))
         print(f"Disconnect error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/api/commands/{command_id}/chat")
-async def send_chat_message(
-    command_id: str,
-    request: Request,
-    chat_request: dict,
-    user_id: str = Depends(require_auth)
-):
-    """Send a chat message about a command"""
-    try:
-        db = next(get_db())
-        db_service = DatabaseService(db)
-        
-        # Get command
-        command = db_service.get_command(command_id, user_id)
-        if not command:
-            raise HTTPException(status_code=404, detail="Command not found")
-        
-        # Extract message from request
-        message = chat_request.get('message', '')
-        if not message:
-            raise HTTPException(status_code=400, detail="Message is required")
-        
-        # Save user message
-        user_msg = db_service.create_chat_message(
-            command_id=command_id,
-            sender='user',
-            message=message
-        )
-        
-        # TODO: Generate AI response using OpenAI
-        # For now, just return a simple acknowledgment
-        ai_response = f"I understand you're asking about: {message}. This is the chat feature - AI responses coming soon!"
-        
-        # Save AI response
-        ai_msg = db_service.create_chat_message(
-            command_id=command_id,
-            sender='ai',
-            message=ai_response
-        )
-        
-        db.close()
-        
-        return {
-            "user_message": {
-                "id": user_msg.id,
-                "message": user_msg.message,
-                "created_at": user_msg.created_at.isoformat()
-            },
-            "ai_message": {
-                "id": ai_msg.id,
-                "message": ai_msg.message,
-                "created_at": ai_msg.created_at.isoformat()
-            }
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Chat message failed: {str(e)}")
-
-@app.get("/api/commands/{command_id}/chat")
-async def get_chat_messages(
-    command_id: str,
-    request: Request,
-    user_id: str = Depends(require_auth)
-):
-    """Get chat messages for a command"""
-    try:
-        db = next(get_db())
-        db_service = DatabaseService(db)
-        
-        # Get command
-        command = db_service.get_command(command_id, user_id)
-        if not command:
-            raise HTTPException(status_code=404, detail="Command not found")
-        
-        # Get chat messages
-        messages = db_service.get_chat_messages(command_id)
-        
-        db.close()
-        
-        return {
-            "messages": [
-                {
-                    "id": msg.id,
-                    "sender": msg.sender,
-                    "message": msg.message,
-                    "message_type": msg.message_type,
-                    "created_at": msg.created_at.isoformat(),
-                    "metadata": msg.message_metadata or {}
-                }
-                for msg in messages
-            ]
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get chat messages: {str(e)}")
-
 @app.get("/api/commands")
 async def list_commands(
     request: Request,
@@ -1281,36 +1169,12 @@ async def list_commands(
         commands = db_service.get_user_commands(user_id, limit, status, connection_id)
         logger.debug(f"list_commands: db returned {len(commands)} rows")
         
-        # Serialize commands safely - direct field access to avoid SQLAlchemy issues
+        # Serialize commands safely - USE serialize_command() to build execution_results dynamically!
         command_list = []
         for cmd in commands:
             try:
-                # Direct field access with ONLY FIELDS THAT EXIST in Command model
-                command_dict = {
-                    "id": str(cmd.id) if cmd.id else "",
-                    "connection_id": str(cmd.connection_id) if cmd.connection_id else "",
-                    "request": cmd.request if cmd.request else "",
-                    "priority": cmd.priority if cmd.priority else "normal",
-                    "status": cmd.status if cmd.status else "pending",
-                    "intent": cmd.intent if cmd.intent else "Unknown",
-                    "action": cmd.action if cmd.action else "Unknown", 
-                    "risk_level": cmd.risk_level if cmd.risk_level else "medium",
-                    "explanation": "",  # Frontend expects this field - provide empty string
-                    "created_at": cmd.created_at.isoformat() if cmd.created_at else None,
-                    "approved_at": cmd.approved_at.isoformat() if cmd.approved_at else None,
-                    "executed_at": cmd.executed_at.isoformat() if cmd.executed_at else None,
-                    "completed_at": cmd.completed_at.isoformat() if cmd.completed_at else None,
-                    "generated_commands": cmd.generated_commands if cmd.generated_commands else [],
-                    "execution_results": cmd.execution_results if cmd.execution_results else {
-                        "success": False,
-                        "total_steps": 0,
-                        "successful_steps": 0, 
-                        "failed_steps": 0,
-                        "skipped_steps": 0,
-                        "total_execution_time": 0.0,
-                        "step_results": []
-                    }
-                }
+                # Use serialize_command() which builds execution_results from step approvals
+                command_dict = serialize_command(cmd)
                 command_list.append(command_dict)
                 
             except Exception as cmd_error:
@@ -1349,7 +1213,9 @@ async def initialize_agent(user_id: str, connection_id: str):
             return agent
         return None
     except Exception as e:
+        import traceback
         print(f"Error creating agent: {e}")
+        print(f"Full traceback: {traceback.format_exc()}")
         return None
 
 async def generate_command_plan(user_id: str, connection_id: str, request: str):
