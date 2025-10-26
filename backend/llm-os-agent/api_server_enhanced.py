@@ -145,10 +145,10 @@ app.add_middleware(
 )
 
 # Auth helper that skips OPTIONS requests (handled by CORS middleware)
-def require_auth(request: Request = None, user_id: str = Header(None, alias="user-id")):
+async def require_auth(request: Request, user_id: str = Header(None, alias="user-id")):
     # Skip auth for OPTIONS requests - let CORS middleware handle them
-    if request and request.method == "OPTIONS":
-        return None
+    if request.method == "OPTIONS":
+        return "options_skip"  # Return dummy value for OPTIONS
     if not user_id:
         raise HTTPException(status_code=401, detail="user-id header required")
     return user_id
@@ -278,6 +278,12 @@ def cleanup_inactive_users():
             del user_agents[user_id]
         if user_id in user_connections:
             del user_connections[user_id]
+
+# Handle OPTIONS requests explicitly for CORS preflight
+@app.options("/{full_path:path}")
+async def options_handler(request: Request, full_path: str):
+    """Handle all OPTIONS requests for CORS preflight"""
+    return Response(status_code=200)
 
 @app.get("/api/health", response_model=HealthResponse)
 async def health_check():
